@@ -1,0 +1,582 @@
+body {
+  background: url(/images/cockpit/admin/bg.jpg) top center repeat-x #333;
+  background-attachment: fixed;
+  color: #333;
+  font-family: Helvetica, Lucida Grande, Arial;
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.6em; }
+
+#wrapper {
+  background: url(/images/cockpit/admin/m.png) center top repeat-y transparent;
+  margin: 0 auto;
+  overflow: hidden;
+  width: 1070px; }
+
+.banner {
+  background-color: black;
+  color: #FFF;
+  overflow: hidden;
+  position: relative; 
+	padding-top: 20px}
+  .banner a {
+    color: #FFF;
+    font-size: 12px;
+    font-weight: bold;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 14px;
+    position: relative;
+    text-decoration: none;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+    -webkit-top-right-radius: 5px;
+    -webkit-top-left-radius: 5px; }
+    .banner a:link, .banner a:visited, .banner a:focus {
+      color: #FFF; }
+    .banner a:hover, .banner a:active {
+      color: #CCC; }
+    .banner a.current {
+      background: #ececec;
+      color: #333; }
+  .banner ul {
+    margin-left: 60px; }
+    .banner ul li {
+      float: left;
+      display: inline; }
+      .banner ul li a {
+        display: inline;
+        float: left;
+        margin-right: 7px; }
+  .banner img {
+    margin: 30px 0 27px 39px; }
+
+#container {
+  background-color: white;
+  margin-left: 34px;
+  text-align: left;
+  width: 1000px; }
+
+#identity {
+  background: url(/images/cockpit/admin/t.png) center bottom no-repeat transparent;
+  margin: 0 auto;
+  overflow: hidden;
+  padding: 2px 95px;
+  text-align: left;
+  width: 880px; }
+  #identity h1 {
+    display: block;
+    font-size: 2em;
+		color:pink;
+    margin: 0;
+    padding: 0;
+    float: left;
+    margin: 9px 0;
+    overflow: hidden;
+    width: 122px; }
+  #identity h2 {
+    color: #FFF;
+    display: block;
+    font-size: 1em;
+    margin: 0;
+    padding: 0;
+    background: url(/images/cockpit/admin/logos/powered-by-sop.png) left top no-repeat transparent;
+    float: right;
+    height: 33px;
+    width: 174px; }
+    #identity h2 a {
+      display: block;
+      height: 100%;
+      overflow: hidden;
+      text-indent: -999em; }
+
+#footer {
+  background: url(/images/cockpit/admin/b.png) center top no-repeat transparent;
+  color: #FFF;
+  margin: 0 auto;
+  padding: 10px 85px 10px;
+  text-align: left;
+  width: 900px; }
+  #footer h6 {
+    background: url(/images/cockpit/admin/logos/sop.png) left top no-repeat transparent;
+    float: left;
+    height: 34px;
+    margin: 0;
+    overflow: hidden;
+    padding: 0 10px 0 0;
+    text-indent: -999em;
+    width: 91px; }
+  #footer p {
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 34px; }
+
+.content {
+  padding: 0 0 30px 20px; }
+  .content h1 {
+    font-size: 24px; }
+  .content h2 {
+    font-size: 18px; }
+
+textarea {
+/*  font-family: Helvetica, Lucida Grande, Arial;*/
+  line-height: 1.2em; }
+
+p {
+  margin-bottom: 1em; }
+
+a {
+  color: #999933;
+  text-decoration: none; }
+
+.content a {
+  border-bottom-color: #666600;
+  border-bottom-width: 1px;
+  border-bottom-style: dotted; }
+  .content a:hover {
+    color: #666600;
+    border-bottom-color: #999933; }
+
+.section {
+  clear: both;
+  overflow: hidden; }
+  .section ul.secondary {
+    clear: both;
+    padding-top: 10px;
+    overflow: hidden;
+    float: none; }
+    .section ul.secondary li {
+      float: left;
+      padding-right: 10px;
+      font-size: 11px;
+      margin-bottom: 0;
+      line-height: 26px; }
+      .section ul.secondary li a {
+        -moz-border-radius: 10px;
+        -webkit-border-radius: 10px;
+        background: url(/images/cockpit/admin/secondary_bg.jpg) repeat-x 0 0;
+        padding: 4px 8px 3px;
+        color: white; }
+        .section ul.secondary li a:hover {
+          background: url(/images/cockpit/admin/secondary_bg.jpg) repeat-x 0 -20px; }
+        .section ul.secondary li a.current {
+          background: #222; }
+
+.header, .parent_header, .child_header {
+  background: #999898 url(/images/cockpit/admin/section_bg.jpg) repeat-x;
+  padding: 10px 10px 0;
+  border-bottom-color: #999898;
+  border-bottom-style: solid;
+  border-bottom-width: 1px; }
+  .header a,   .parent_header a,   .child_header a {
+    color: #313634; }
+  .header h1,   .parent_header h1,   .child_header h1 {
+    margin-bottom: 10px;
+    float: left; }
+
+.header p.subnav, .child_header p.subnav {
+  margin-bottom: 0;
+  float: left;
+  margin-left: 10px; }
+  .header p.subnav a,   .child_header p.subnav a {
+    padding: 5px 10px 4px 8px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: #eee;
+    color: #333;
+    font-weight: bold;
+    font-size: 10px;
+    border: 0; }
+    .header p.subnav a:hover,     .child_header p.subnav a:hover {
+      background: #ccc; }
+
+.parent_header {
+  font-size: 16px; }
+  .parent_header h1 {
+    margin: 5px 0; }
+
+.child_header {
+  background: #a5a5a5;
+  border-bottom: solid 1px #999898;
+  border-top: solid 1px #aaa;
+  padding: 10px 0 0 10px; }
+  .child_header h1 {
+    float: left; }
+
+ul.primary {
+  float: left;
+  padding-left: 20px; }
+
+ul.secondary {
+  float: right;
+  padding-right: 20px; }
+
+ul.tertiary {
+  position: absolute;
+  top: 10px;
+  right: 5px; }
+  ul.tertiary li {
+    float: left;
+    height: 23px;
+    line-height: 23px;
+    color: #034146; }
+  ul.tertiary a {
+    font-weight: normal;
+    font-size: 11px;
+    height: 20px;
+    line-height: 20px;
+    color: white;
+    background: #333;
+    float: left;
+    padding: 0 10px;
+    -moz-border-radius: 12px; }
+
+table.list td {
+  padding: 2px 5px; }
+table.list tr.even {
+  background: #d8f3fa; }
+
+table.list td.checkmark {
+  width: 40px;
+  text-align: center; }
+
+.content .pagination {
+  margin-top: 1em;
+  font-size: 11px;
+  line-height: 15px;
+  overflow: hidden; }
+  .content .pagination span, .content .pagination a, .content .pagination em {
+    float: left;
+    height: 18px;
+    line-height: 20px;
+    padding: 0 6px;
+    margin: 1em 5px 1em 0;
+    border: none; }
+  .content .pagination a {
+    background: #eee; }
+    .content .pagination a:hover {
+      background: #bbf6fe; }
+  .content .pagination em {
+    font-style: normal;
+    font-weight: bold;
+    background: #ddd; }
+  .content .pagination span.current {
+    background: #ddd; }
+  .content .pagination span.disabled {
+    color: #202523; }
+  .content .pagination.bottom {
+    margin-top: 3em; }
+
+form.basic {}
+	form.basic p { text-align: left; }
+  form.basic div.field {
+    text-align: left;
+    margin-bottom: 1em;
+    clear: left; }
+    form.basic div.field label {
+      display: block; }
+    form.basic div.field label, form.basic div.field  fieldset legend span {
+      font-size: 12px;
+      margin-top: 2px;
+      font-weight: bold; }
+    form.basic div.field.datetime fieldset label,     form.basic div.field.date fieldset label {
+      font-weight: normal;
+      margin-right: 5px; }
+    form.basic div.field.datetime fieldset ol li,     form.basic div.field.date fieldset ol li {
+      clear: none;
+      margin-right: 10px;
+      margin-bottom: 0; }
+  form.basic input, form.basic textarea {
+    width: 400px;
+    padding: 5px;
+    border-color: #ccc;
+    border-style: solid;
+    border-width: 1px; }
+	form.basic input[type="submit"] {
+		width: 200px;
+	}
+  form.basic select {
+    display: block; }
+  form.basic .field_with_errors input {
+    border-color: #ff5342; }
+  form.basic input.big {
+    font-size: 150%; }
+  form.basic textarea {
+    height: 140px;
+    font-size: 12px;
+    color: #313634; }
+  form.basic p {
+    clear: both;
+    overflow: hidden;
+    margin-bottom: 1.2em; }
+    form.basic p.inline-hints {
+      margin-bottom: 0; }
+  form.basic .info {
+    margin-left: 85px; }
+  form.basic .buttons {
+    padding: 10px 0 0 0; }
+  form.basic .caption {
+    clear: both;
+    margin: 5px 0 0 125px;
+    font-style: italic;
+    font-size: 11px;
+    color: #979c9a; }
+    form.basic .caption img {
+      vertical-align: top; }
+  form.basic .boolean input {
+    width: auto; }
+  form.basic .boolean label {
+    width: auto;
+    margin-left: 5px; }
+  form.basic .boolean .caption {
+    margin: 0px 0pt 0pt 122px; }
+
+#errorExplanation {
+  color: #ff5342; }
+  #errorExplanation ul, #errorExplanation p {
+    color: #313634; }
+  #errorExplanation p {
+    font-weight: bold;
+    margin: .3em 0 0 0; }
+  #errorExplanation li {
+    list-style: circle inside; }
+  #errorExplanation ul {
+    margin: 0 0 1em 1em; }
+
+#reports {
+  clear: both;
+  width: 100%;
+  overflow: hidden;
+  padding-bottom: 10px; }
+  #reports ul {
+    float: left; }
+    #reports ul li {
+      float: left;
+      clear: both;
+      margin-top: 3px;
+      background: #FDFF8E;
+      padding: 2px 5px 0; }
+
+div.destruction {
+  margin-top: 4em;
+  margin-left: 40px;
+  padding: 5px;
+  background: #d8f3fa;
+  width: 400px; }
+  div.destruction p.buttons {
+    padding: 0;
+    margin: .5em 0; }
+
+ul.toolbar {
+  overflow: hidden;
+  width: 444px;
+  background: #b6d1d8;
+  padding: 2px 5px;
+  margin-left: 125px; }
+  ul.toolbar li {
+    float: left;
+    margin-right: 5px; }
+    ul.toolbar li a {
+      -moz-border-radius: 10px;
+      background: #e9ffff;
+      padding: 3px 8px 2px;
+      border: none;
+      font-size: 11px;
+      color: #6d7276; }
+
+p.inline-hints {
+  color: #666; }
+
+p.buttons {
+  background: url(/images/cockpit/progress.gif) -9999px -9999px no-repeat; }
+
+p.buttons span.please_wait {
+  float: left;
+  height: 20px;
+  font-weight: bold;
+  font-size: 10px;
+  line-height: 20px;
+  text-transform: uppercase;
+  color: #999; }
+  p.buttons span.please_wait img {
+    vertical-align: middle; }
+
+form.basic .multiple_selects_holder {
+  clear: both; }
+
+form.basic .multiple_selects {
+  float: left; }
+  form.basic .multiple_selects p {
+    margin-bottom: 5px; }
+    form.basic .multiple_selects p select, form.basic .multiple_selects p a.remove {
+      float: left; }
+    form.basic .multiple_selects p a.remove {
+      margin-left: 5px; }
+
+.check_field {
+  margin-left: 130px;
+  padding-left: 10px;
+  margin-bottom: 2em;
+  overflow: hidden; }
+  .check_field input {
+    float: none;
+    width: auto; }
+  .check_field label {
+    text-align: left;
+    width: auto;
+    font-weight: normal;
+    clear: left; }
+  .check_field h3 {
+    font-weight: bold; }
+
+div.tag_field .caption {
+  width: 420px; }
+
+.content table.listing {
+  clear: both; }
+  .content table.listing th {
+    padding: 0 5px 2px;
+    text-align: left;
+    text-transform: uppercase;
+    font-size: 10px;
+    color: #999; }
+    .content table.listing th a {
+      border: none; }
+      .content table.listing th a.selected {
+        font-weight: bold;
+        text-decoration: underline; }
+  .content table.listing td {
+    padding: 4px 5px;
+    border-right: solid 1px white;
+    line-height: 1.4em; }
+  .content table.listing td.active, .content table.listing td.ordinal, .content table.listing td.boolean, .content table.listing td.photos, .content table.listing td.blogs_count, .content table.listing td.features_count {
+    text-align: center; }
+  .content table.listing tr.odd td {
+    background-color: #f3f3f3; }
+  .content table.listing tr.dragging td {
+    background-color: #d3d3d3; }
+  .content table.listing td.button {
+    padding: 2px; }
+    .content table.listing td.button a {
+      border-bottom: none;
+      height: 16px;
+      width: 16px;
+      display: block;
+      text-indent: -9999px; }
+    .content table.listing td.button img {
+      vertical-align: middle; }
+  .content table.listing td a.assets {
+    background: url(/images/cockpit/icons/folder.gif); }
+  .content table.listing td.edit a {
+    background: url(/images/cockpit/icons/edit.gif); }
+  .content table.listing td a.photos {
+    background: url(/images/cockpit/icons/camera.gif); }
+  .content table.listing td.tracks a {
+    background: url(/images/cockpit/icons/music.gif); }
+  .content table.listing td.delete a {
+    background: url(/images/cockpit/icons/trash.gif); }
+  .content table.listing td.show a {
+    background: url(/images/cockpit/icons/search_left.gif); }
+  .content table.listing td.copy a {
+    background: url(/images/cockpit/icons/copy.gif); }
+  .content table.listing td.uploads a {
+    background: url(/images/cockpit/icons/document.gif); }
+  .content table.listing tbody td.sort_handle {
+    background-image: url(/images/cockpit/icons/handle.gif);
+    background-repeat: no-repeat;
+    background-position: center center;
+    cursor: -moz-grab;
+    width: 18px; }
+
+p.empty {
+  clear: both; }
+
+form.cockpit_filters {
+  float: left;
+  clear: both;
+  overflow: hidden;
+  clear: both;
+  padding: .5em 1em 1em;
+  margin: 1em 0;
+  background: #eee;
+  -moz-border-radius: 5px; }
+  form.cockpit_filters ul {
+    float: left; }
+  form.cockpit_filters li {
+    float: left;
+    margin-right: 10px; }
+  form.cockpit_filters div.controls {
+    float: left;
+    text-align: center; }
+    form.cockpit_filters div.controls button, form.cockpit_filters div.controls a {
+      float: left;
+      clear: left; }
+
+div.sidebar {
+  float: left;
+  margin-left: 10px;
+  width: 260px; }
+  div.sidebar .uploads {
+    margin-top: 720px; }
+  div.sidebar #upload_list {
+    height: 430px;
+    margin-bottom: 10px;
+    overflow: auto; }
+
+#photo_set {
+  width: 500px;
+  float: left; }
+  #photo_set ul li {
+    background: #e7e7e7;
+    border: solid 1px #ddd;
+    padding: 4px;
+    clear: both;
+    overflow: hidden;
+    margin-bottom: 5px;
+    width: 420px;
+    position: relative; }
+    #photo_set ul li.editing {
+      border: solid 1px #aaa; }
+    #photo_set ul li.primary {
+      background: #ccc;
+      border: solid #999 1px; }
+      #photo_set ul li.primary a.make_primary {
+        display: none; }
+    #photo_set ul li p.buttons {
+      margin-bottom: .5em; }
+    #photo_set ul li .icon {
+      float: left;
+      height: 50px;
+      margin-right: 10px; }
+    #photo_set ul li .actions {
+      float: left; }
+      #photo_set ul li .actions a {
+        width: 16px;
+        height: 16px;
+        display: block;
+        text-indent: -9999px;
+        position: absolute;
+        top: 5px;
+        border: none; }
+        #photo_set ul li .actions a.delete {
+          background: url(/images/cockpit/icons/trash.gif);
+          right: 5px; }
+        #photo_set ul li .actions a.edit {
+          background: url(/images/cockpit/icons/edit.gif);
+          right: 24px; }
+        #photo_set ul li .actions a.make_primary {
+          background: url(/images/cockpit/icons/flag.gif);
+          right: 43px; }
+  #photo_set ul .message {
+    position: absolute;
+    background: white;
+    color: black;
+    float: left;
+    right: 5px;
+    top: 5px;
+    padding: 2px 5px 0;
+    border: solid 2px #ccc; }
+
+h4 span.sub {
+  font-weight: normal; }

@@ -1,0 +1,38 @@
+<p>
+  <b>Group:</b>
+  <%= @group.group_id %>
+</p>
+
+<p>
+  <b>Group name:</b>
+  <%= @group.group_name %>
+</p>
+
+<p>
+  <b>Group description:</b>
+  <%= @group.group_description %>
+</p>
+
+<p>
+  <b>Email permission:</b>
+  <%= @group.email_permission %>
+</p>
+
+<p>
+  <% @emails = @group.all_addresses %>
+  <% if @emails.length > 200 %>
+    <b>Email List (showing top 20 of <%= number_with_delimiter(@emails.length) %> total):</b>
+    <% @emails = @emails[0..19] %>
+  <% else %>
+    <b>Email List:</b> 
+  <% end %>
+  <ul>
+    <% @emails.each do |email| %>
+      <li><%= email %></li>
+    <% end %>
+  </ul>
+</p>
+
+
+<%= link_to 'Edit', edit_group_path(@group) %> |
+<%= link_to 'Back', groups_path %>

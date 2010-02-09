@@ -1,0 +1,29 @@
+<%- content_for(:title) { "Listing all #{model_klass.pluralize.humanize}" } %>
+
+<%- content_for :header do %>
+  <p class="subnav"><%= link_to("+&nbsp;&nbsp;Create a new #{model_klass.titleize}".html_safe, send("new_#{model_klass}_path")) %></p>
+<% end %>
+<%= render :partial => "layouts/filters" %>
+
+<%- unless models.empty? %>
+  <table class="listing <%= model_klass.underscore %>">
+    <thead>
+      <tr>
+        <%= render :partial => "header" %>
+      </tr>
+    </thead>
+    <tbody>
+      <%- models.each do |model| %>
+        <tr id="<%= dom_id(model) %>" class="<%= cycle('odd','even') %> <%= model.class.to_s.underscore %>" data-param="<%= model.to_param %>">
+          <%= render :partial => "listing", :object => model %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <%= will_paginate(models) %>
+  
+<%- else %>
+  <p class="empty">
+    <%= "There are no #{cockpit_object_name(model_klass).pluralize}." %>
+  </p>
+<% end %>

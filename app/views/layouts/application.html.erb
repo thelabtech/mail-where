@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Groups: <%= controller.action_name %></title>
+  <%= javascript_include_tag 'jquery', 'jquery.tablednd_0_5', 'jquery.form', 'jquery.dragsort-0.3', 'jquery.autocomplete', 'cycle', 'admin', 'rails', 'application', :cache => true %>
+  <%= stylesheet_link_tag 'reset', 'cockpit', 'admin' %>
+  <%= csrf_meta_tag %>
+</head>
+<body>
+    <div id="identity">
+      <h1>MailWhere</h1>
+      
+    </div>
+    
+    <div id="wrapper">
+      <div id="container">
+        <div class="banner section">
+          <%= render :partial => 'layouts/navigation' %>
+        </div>
+        <div class="header section">
+          <h1><%= yield :title %></h1>
+          <%- if (header = yield :header) && !@show_header == true %>
+            <%= header %>
+          <% end %>
+        </div>
+        <div class="content section">
+          <%= reports_for_page %>
+          <%= yield %>
+        </div>
+      </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,6 @@
+<div id="navigation">
+  <ul class="primary">
+    <%= tab('Groups', '/groups', :title => 'Groups you can email') { request.path == '/' || params[:controller] == 'groups'} %>
+  </ul>
+      
+</div>

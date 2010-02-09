@@ -1,0 +1,48 @@
+<% form_for(@group, :html => {:class => 'basic'}) do |f| %>
+  <%= f.error_messages %>
+  <div class="field">
+    <% if @group.new_record? %>
+      <%= f.label :group_id, 'Group Email Address' %><br />
+      <%= f.text_field :group_id, :size => 17 %>@cojourners.com
+    <% else %>
+      <!-- <br>
+      <strong>Group Email Address:</strong>
+      <%= @group.group_id %>@cojourners.com -->
+    <% end %>
+  </div>
+  <div class="field">
+    <%= f.label :group_name, 'Group Name' %>
+    <%= f.text_field :group_name, :size => 100 %>
+  </div>
+  <div class="field">
+    <%= f.label :group_description, 'Describe the Group' %>
+    <%= f.text_field :group_description, :size => 100 %>
+  </div>
+  <div class="field">
+    <%= f.label :email_permission, "Who can send emails?" %>
+    <%= f.select :email_permission, [['Members of this group','Member'],['People with @cojouners.com addresses','Domain'],['Anyone','Anyone']] %>
+  </div>
+  <div class="field">
+    <%= f.label :email_query %>
+    <%= f.text_area :email_query, :rows => 5 %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit %> or
+    <%= link_to 'Cancel', groups_path %>
+  </div>
+<% end %>
+
+  <% unless @group.new_record? %>
+    <div class="field" id="extra_addresses_box">
+      <h3>Extra Addresses Not In Query:</h3>
+      <% form_for(@group.members.new, :url => group_members_path(@group), :remote => true, :before => "$('#spinner').show()", :complete => "$('#spinner').hide()") do |f| %>
+        <%= f.text_field :email %>
+        <%= f.submit "Add Member" %>
+        <%= spinner %>
+      <% end %>
+      <ul id="extra_addresses">
+        <%= render :partial => 'members/exception', :collection => @group.members.exceptions %>
+      </ul>
+    </div>
+  <% end %>

@@ -1,0 +1,11 @@
+<div id="reports">
+  <%- [:notice, :warn, :error].each do |level| %>
+    <%- if reports[level] && !reports[level].empty? %>
+      <ul class="<%= level %>">
+        <%- reports[level].each do |report| %>
+          <li><%= report %></li>
+        <% end %>
+      </ul>
+    <% end %>  
+  <% end %>
+</div>

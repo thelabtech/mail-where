@@ -1,0 +1,26 @@
+<td class="group_id attribute text">
+  <%= listing.group_id %>@cojourners.com
+</td>
+<td class="group_name attribute string">
+  <%= listing.group_name %>
+</td>
+<td class="group_description attribute string">
+  <%= listing.group_description %>
+</td>
+<td class="email_permission attribute string">
+  <%= listing.email_permission %>
+</td>
+<td class="button show">
+  <%= link_to('show', group_path(listing), :title => "Show this Group") %>
+</td>
+<td class="button edit">
+  <%= link_to('edit', edit_group_path(listing), :title => "Edit this Group") %>
+</td>
+
+<td class="button copy">
+  <%= link_to('copy', new_group_path(:group_id => listing), :title => "Copy this Group") %>
+</td>
+
+<td class="button delete">
+  <%= link_to('delete', group_path(listing), :title => "Delete this Group", :method => :delete, :confirm => "Are you sure you want to delete that group?") %>
+</td>
