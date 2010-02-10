@@ -11,10 +11,10 @@ class Member < ActiveRecord::Base
   scope :exceptions, where(:exception => true)
   
   def add_to_google
-    GoogleGroupsApi.add_member(email, group.group_id)
+    GoogleGroupsApi.add_member(email, group.group_id) if exception?
   end
   
   def remove_from_google
-    GoogleGroupsApi.delete_member(email, group.group_id)
+    GoogleGroupsApi.delete_member(email, group.group_id) if exception?
   end
 end

@@ -1,11 +1,11 @@
 class Group < ActiveRecord::Base
   set_table_name 'mail_groups'
-  has_many :members, :dependent => :destroy
+  has_many :members, :dependent => :delete_all
   validates_presence_of :group_id, :group_name, :group_description
   validates_format_of :group_id, :with => /^([^\s]+)$/i
   validates_uniqueness_of :group_id, :on => :create, :message => "must be unique"
   after_validation :create_google_group, :on => :create
-  after_update :queue_delayed_jobs
+  after_save :queue_delayed_jobs, :update_members
   before_destroy :delete_google_group
   
   def self.pull_groups_from_google
@@ -79,21 +79,20 @@ class Group < ActiveRecord::Base
       to_add.each {|a| self.members.create(:email => a)}
     end
   end
-  # 
-  # def update_google_members
-  #   to_delete = members_from_google - all_addresses
-  #   logger.debug(to_delete.inspect)
-  #   to_delete.map {|m| GoogleGroupsApi.delete_member(m, group_id)}
-  #   
-  #   to_add = all_addresses - members_from_google
-  #   logger.debug(to_add.inspect)
-  #   to_add.map {|m| GoogleGroupsApi.add_member(m, group_id)}
-  # end
+  
+  def update_google_members
+    to_delete = members_from_google - all_addresses
+    logger.debug(to_delete.inspect)
+    to_delete.map {|m| GoogleGroupsApi.delete_member(m, group_id)}
+    
+    to_add = all_addresses - members_from_google
+    logger.debug(to_add.inspect)
+    to_add.map {|m| GoogleGroupsApi.add_member(m, group_id)}
+  end
   
   def queue_delayed_jobs
     self.send_later(:update_google_group)
-    self.send_later(:update_members)
-    # self.send_later(:update_google_members)
+    self.send_later(:update_google_members)
   end
   
   def delete_google_group
