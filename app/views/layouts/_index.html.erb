@@ -24,6 +24,6 @@
   
 <%- else %>
   <p class="empty">
-    <%= "There are no #{cockpit_object_name(model_klass).pluralize}." %>
+    <%= "There are no #{model_klass.pluralize.humanize}." %>
   </p>
 <% end %>
