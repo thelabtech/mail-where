@@ -18,16 +18,16 @@ class GoogleGroupsApi
   
   def self.groups
     unless @@groups
-      c = get("https://apps-apis.google.com/a/feeds/group/2.0/cojourners.com")
-      feed = Atom::Feed.new(c.body_str)
+      response = get("https://apps-apis.google.com/a/feeds/group/2.0/cojourners.com")
+      feed = Atom::Feed.new(response)
       @@groups = feed.entries.collect {|e| GoogleGroup.new(e)}
     end
   end
   
   def self.members(group_id)
     members = []
-    c = get("https://apps-apis.google.com/a/feeds/group/2.0/cojourners.com/#{group_id}/member")
-    feed = Atom::Feed.new(c.body_str)
+    response = get("https://apps-apis.google.com/a/feeds/group/2.0/cojourners.com/#{group_id}/member")
+    feed = Atom::Feed.new(response)
     feed.entries.each do |entry|
       members << entry.extended_elements.detect {|ee| ee.attributes['name'] == 'memberId'}.attributes['value']
     end
@@ -64,8 +64,8 @@ class GoogleGroupsApi
   end
   
   def self.group_exists?(group_id)
-    c = get("https://apps-apis.google.com/a/feeds/group/2.0/cojourners.com/#{group_id}")
-    feed = Atom::Feed.new(c.body_str)
+    response = get("https://apps-apis.google.com/a/feeds/group/2.0/cojourners.com/#{group_id}")
+    feed = Atom::Feed.new(response)
     !feed.links.empty?
   end
   
@@ -87,26 +87,30 @@ class GoogleGroupsApi
   
   protected 
     def self.post(url, data)
-      c = Curl::Easy.http_post(url, data) do |curl|
-        set_headers(curl)
-      end
+      # c = Curl::Easy.http_post(url, data) do |curl|
+      #   set_headers(curl)
+      # end
+      response = `curl -X POST #{curl_headers} #{url} -d "#{data.gsub('"','\"')}"`
       Rails.logger.debug('=================================================')
       Rails.logger.debug(url)
-      Rails.logger.debug(c.body_str.inspect)
+      Rails.logger.debug(response)
       Rails.logger.debug(data)
       Rails.logger.debug('=================================================')
-      c
+      response
     end
     
     def self.get(url)
-      c = Curl::Easy.http_get(url) do |curl|
-        set_headers(curl)
-      end
+      # c = Curl::Easy.http_get(url) do |curl|
+      #   set_headers(curl)
+      # end
+      response = `curl #{curl_headers} #{url}`
+      
+      raise response.inspect
       Rails.logger.debug('=================================================')
       Rails.logger.debug(url)
-      Rails.logger.debug(c.body_str.inspect)
+      Rails.logger.debug(response.inspect)
       Rails.logger.debug('=================================================')
-      c
+      response
     end
     
     def self.put(url, data)

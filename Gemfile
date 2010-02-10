@@ -10,7 +10,7 @@ gem "rails", "3.0.0.beta"
 # ActiveRecord requires a database adapter. By default,
 # Rails has selected sqlite3.
 gem "mysql"
-gem 'curb'
+# gem 'curb'
 gem 'atom'
 gem 'will_paginate', '~> 3.0.pre'
 ## Bundle the gems you use:
