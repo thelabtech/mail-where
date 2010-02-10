@@ -6,7 +6,7 @@ class Group < ActiveRecord::Base
   validates_uniqueness_of :group_id, :on => :create, :message => "must be unique"
   after_validation :create_google_group, :on => :create
   after_update :queue_delayed_jobs
-  before_destroy :delete_group
+  before_destroy :delete_google_group
   
   def self.pull_groups_from_google
     GoogleGroupsApi.groups.each do |gg|
@@ -94,6 +94,10 @@ class Group < ActiveRecord::Base
     self.send_later(:update_google_group)
     self.send_later(:update_members)
     # self.send_later(:update_google_members)
+  end
+  
+  def delete_google_group
+    GoogleGroupsApi.delete_group(group_id)
   end
   
   protected

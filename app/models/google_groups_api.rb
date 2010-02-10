@@ -5,12 +5,11 @@ class GoogleGroupsApi
   
   def self.auth
     if !@@auth || !@@auth_updated_at || @@auth_updated_at < 23.hours.ago
-      c = Curl::Easy.http_post("https://www.google.com/accounts/ClientLogin", 
-                         Curl::PostField.content('Email', 'admin@cojourners.com'),
-                         Curl::PostField.content('Passwd', 'CCCroxyoursox'),
-                         Curl::PostField.content('accountType', 'HOSTED'),
-                         Curl::PostField.content('service', 'apps'))
-      @@auth = c.body_str.split("\n").last.split('=').last
+      response = post_no_auth("https://www.google.com/accounts/ClientLogin", ['Email=admin@cojourners.com',
+                                                                     'Passwd=CCCroxyoursox',
+                                                                     'accountType=HOSTED',
+                                                                     'service=apps'])
+      @@auth = response.split("\n").last.split('=').last
       @@auth_updated_at = Time.now
     end
     @@auth
@@ -87,10 +86,7 @@ class GoogleGroupsApi
   
   protected 
     def self.post(url, data)
-      # c = Curl::Easy.http_post(url, data) do |curl|
-      #   set_headers(curl)
-      # end
-      response = `curl -X POST #{curl_headers} #{url} -d "#{data.gsub('"','\"')}"`
+      response = `curl -X POST #{curl_headers} #{url} #{data_clause(data)}`
       Rails.logger.debug('=================================================')
       Rails.logger.debug(url)
       Rails.logger.debug(response)
@@ -99,13 +95,13 @@ class GoogleGroupsApi
       response
     end
     
+    def self.post_no_auth(url, data)
+      response = `curl -X POST #{url} #{data_clause(data)}`
+    end
+    
     def self.get(url)
-      # c = Curl::Easy.http_get(url) do |curl|
-      #   set_headers(curl)
-      # end
       response = `curl #{curl_headers} #{url}`
       
-      raise response.inspect
       Rails.logger.debug('=================================================')
       Rails.logger.debug(url)
       Rails.logger.debug(response.inspect)
@@ -114,7 +110,7 @@ class GoogleGroupsApi
     end
     
     def self.put(url, data)
-      `curl -X PUT #{curl_headers} #{url} -d "#{data.gsub('"','\"')}"`
+      `curl -X PUT #{curl_headers} #{url} #{data_clause(data)}`
     end
     
     def self.delete(url)
@@ -130,6 +126,11 @@ class GoogleGroupsApi
       curl.headers["Authorization"] = "GoogleLogin auth=#{auth}"
       curl.verbose = true
       curl 
+    end
+    
+    def self.data_clause(data)
+      data = Array.wrap(data)
+      data_clause = data.collect {|d| "-d \"#{d.gsub('"','\"')}\""}.join(' ')
     end
       
 end
