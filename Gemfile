@@ -11,7 +11,6 @@ gem "rails", "3.0.0.beta"
 # Rails has selected sqlite3.
 gem "mysql"
 gem 'curb'
-gem 'nokogiri'
 gem 'atom'
 gem 'will_paginate', '~> 3.0.pre'
 ## Bundle the gems you use:
