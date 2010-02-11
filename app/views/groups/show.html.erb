@@ -1,6 +1,6 @@
 <p>
   <b>Group:</b>
-  <%= @group.group_id %>
+  <%= @group.group_id %>@cojourners.com
 </p>
 
 <p>
@@ -32,7 +32,8 @@
     <% end %>
   </ul>
 </p>
-
+<%= button_to 'Update This List', refresh_group_path(@group) %>
+<br/>
 
 <%= link_to 'Edit', edit_group_path(@group) %> |
 <%= link_to 'Back', groups_path %>

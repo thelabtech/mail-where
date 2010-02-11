@@ -8,6 +8,9 @@ class Group < ActiveRecord::Base
   after_save :queue_delayed_jobs, :update_members
   before_destroy :delete_google_group
   
+  scope :daily_updates, where(:update_interval => 'Daily')
+  scope :weekly_updates, where(:update_interval => 'Weekly')
+  
   def self.pull_groups_from_google
     GoogleGroupsApi.groups.each do |gg|
       group_id = gg.group_id.to_s.sub('@cojourners.com', '')
@@ -20,6 +23,14 @@ class Group < ActiveRecord::Base
       end
                       
     end
+  end
+  
+  def self.update_daily_groups
+    Group.daily_updates.each {|g| g.update_google_members}
+  end
+  
+  def self.update_weekly_groups
+    Group.weekly_updates.each {|g| g.update_google_members}
   end
   
   def members_from_google
@@ -88,6 +99,19 @@ class Group < ActiveRecord::Base
     to_add = all_addresses - members_from_google
     logger.debug(to_add.inspect)
     to_add.map {|m| GoogleGroupsApi.add_member(m, group_id)}
+  end
+  
+  # If the query has changed, or the data under the query has changed, we need to update the member list
+  def refresh!
+    old_addresses = members.collect(&:email)
+    to_delete = old_addresses - addresses
+    Member.delete_all({:id => to_delete, :group_id => self.id})
+    
+    to_add = addresses - old_addresses
+    to_add.each {|a| self.members.create(:email => a)}
+    
+    # and also update google.
+    self.send_later(:update_google_members)
   end
   
   def queue_delayed_jobs

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100209154702) do
+ActiveRecord::Schema.define(:version => 20100210132657) do
 
   create_table "academic_departments", :force => true do |t|
     t.string "name"
@@ -2989,7 +2989,7 @@ ActiveRecord::Schema.define(:version => 20100209154702) do
     t.integer  "priority",   :default => 0
     t.integer  "attempts",   :default => 0
     t.text     "handler"
-    t.string   "last_error"
+    t.text     "last_error"
     t.datetime "run_at"
     t.datetime "locked_at"
     t.datetime "failed_at"
@@ -3007,6 +3007,7 @@ ActiveRecord::Schema.define(:version => 20100209154702) do
     t.datetime "updated_at"
     t.text     "email_query"
     t.integer  "exists_on_google",  :limit => 1, :default => 0
+    t.string   "update_interval"
   end
 
   add_index "mail_groups", ["group_id"], :name => "index_mail_groups_on_group_id"
@@ -3211,6 +3212,9 @@ ActiveRecord::Schema.define(:version => 20100209154702) do
     t.string   "dorm"
     t.string   "room"
     t.string   "preferredPhone",       :limit => 25
+    t.string   "phone1_type",                         :default => "cell"
+    t.string   "phone2_type",                         :default => "home"
+    t.string   "phone3_type",                         :default => "work"
   end
 
   add_index "ministry_newaddress", ["addressType", "fk_PersonID"], :name => "unique_person_addressType", :unique => true
@@ -3435,6 +3439,7 @@ ActiveRecord::Schema.define(:version => 20100209154702) do
     t.string   "no",        :limit => 80
     t.string   "abbrv",     :limit => 80
     t.string   "hrd",       :limit => 50
+    t.string   "spPhone",   :limit => 24
   end
 
   create_table "ministry_staff", :force => true do |t|
@@ -3445,7 +3450,7 @@ ActiveRecord::Schema.define(:version => 20100209154702) do
     t.string   "isMale",                   :limit => 1
     t.string   "position",                 :limit => 30
     t.string   "countryStatus",            :limit => 10
-    t.string   "jobStatus",                :limit => 30
+    t.string   "jobStatus",                :limit => 60
     t.string   "ministry",                 :limit => 35
     t.string   "strategy",                 :limit => 20
     t.string   "isNewStaff",               :limit => 1
@@ -3601,7 +3606,7 @@ ActiveRecord::Schema.define(:version => 20100209154702) do
     t.string   "altName",                :limit => 100
     t.string   "isSecure",               :limit => 1
     t.string   "isClosed",               :limit => 1
-    t.string   "region",                 :limit => 2
+    t.string   "region"
     t.string   "mpta",                   :limit => 30
     t.string   "urlToLogo"
     t.string   "enrollment",             :limit => 10
@@ -3651,7 +3656,7 @@ ActiveRecord::Schema.define(:version => 20100209154702) do
     t.string   "isMale",                   :limit => 1
     t.string   "position",                 :limit => 30
     t.string   "countryStatus",            :limit => 10
-    t.string   "jobStatus",                :limit => 30
+    t.string   "jobStatus",                :limit => 60
     t.string   "ministry",                 :limit => 35
     t.string   "strategy",                 :limit => 20
     t.string   "isNewStaff",               :limit => 1
@@ -3737,7 +3742,7 @@ ActiveRecord::Schema.define(:version => 20100209154702) do
     t.string   "isMale",                   :limit => 1
     t.string   "position",                 :limit => 30
     t.string   "countryStatus",            :limit => 10
-    t.string   "jobStatus",                :limit => 30
+    t.string   "jobStatus",                :limit => 60
     t.string   "ministry",                 :limit => 35
     t.string   "strategy",                 :limit => 20
     t.string   "isNewStaff",               :limit => 1
@@ -3833,7 +3838,7 @@ ActiveRecord::Schema.define(:version => 20100209154702) do
     t.string  "altName",           :limit => 100
     t.string  "isSecure",          :limit => 1
     t.string  "isClosed",          :limit => 1
-    t.string  "region",            :limit => 2
+    t.string  "region"
     t.string  "mpta",              :limit => 30
     t.string  "urlToLogo"
     t.string  "enrollment",        :limit => 10

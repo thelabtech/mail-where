@@ -23,6 +23,10 @@
     <%= f.select :email_permission, [['Members of this group','Member'],['People with @cojouners.com addresses','Domain'],['Anyone','Anyone']] %>
   </div>
   <div class="field">
+    <%= f.label :update_interval, "How often should this list update?" %>
+    <%= f.select :update_interval, ['Daily','Weekly'] %>
+  </div>
+  <div class="field">
     <%= f.label :email_query %>
     <%= f.text_area :email_query, :rows => 5 %>
   </div>

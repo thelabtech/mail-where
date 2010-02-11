@@ -1,4 +1,5 @@
 class GroupsController < ApplicationController
+  before_filter :find_group, :only => [:show, :edit, :update, :refresh]
   # GET /groups
   # GET /groups.xml
   def index
@@ -13,8 +14,6 @@ class GroupsController < ApplicationController
   # GET /groups/1
   # GET /groups/1.xml
   def show
-    @group = Group.find(params[:id])
-
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @group }
@@ -39,7 +38,6 @@ class GroupsController < ApplicationController
 
   # GET /groups/1/edit
   def edit
-    @group = Group.find(params[:id])
   end
 
   # POST /groups
@@ -61,8 +59,6 @@ class GroupsController < ApplicationController
   # PUT /groups/1
   # PUT /groups/1.xml
   def update
-    @group = Group.find(params[:id])
-
     respond_to do |format|
       if @group.update_attributes(params[:group])
         format.html { redirect_to(@group, :notice => 'Group was successfully updated.') }
@@ -85,4 +81,15 @@ class GroupsController < ApplicationController
       format.xml  { head :ok }
     end
   end
+
+  def refresh
+    @group.refresh!
+    flash[:notice] = "This group is up to date."
+    redirect_to :back
+  end
+  
+  protected
+    def find_group
+      @group = Group.find(params[:id])
+    end
 end
