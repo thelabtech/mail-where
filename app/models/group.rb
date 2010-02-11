@@ -100,7 +100,7 @@ class Group < ActiveRecord::Base
   def refresh!
     old_addresses = members.collect(&:email)
     to_delete = old_addresses - addresses
-    Member.delete_all({:id => to_delete, :group_id => self.id})
+    Member.delete_all({:id => to_delete, :group_id => self.id}) if to_delete.present?
     
     to_add = addresses - old_addresses
     to_add.each {|a| self.members.create(:email => a)}
