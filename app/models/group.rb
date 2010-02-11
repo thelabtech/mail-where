@@ -3,9 +3,8 @@ class Group < ActiveRecord::Base
   has_many :members, :dependent => :delete_all
   validates_presence_of :group_id, :group_name, :group_description
   validates_format_of :group_id, :with => /^([^\s]+)$/i
-  validates_uniqueness_of :group_id, :on => :create, :message => "must be unique"
-  after_validation :create_google_group, :on => :create
-  after_save :queue_delayed_jobs, :update_members
+  validates_uniqueness_of :group_id, :group_name, :on => :create, :message => "must be unique"
+  after_save :queue_delayed_jobs
   before_destroy :queue_delete_google_group
   
   scope :daily_updates, where(:update_interval => 'Daily')
@@ -66,19 +65,14 @@ class Group < ActiveRecord::Base
     @old_addresses
   end
   
-  def create_google_group
-    GoogleGroupsApi.create_group(self)
-    GoogleGroupsApi.add_to_shared_contacts(self)
-    self.exists_on_google = true
-  end
-  
   def update_google_group
     if GoogleGroupsApi.group_exists?(group_id)
-      logger.debug("doesn't exist")
+      logger.debug("group exists")
       GoogleGroupsApi.update_group(self)
     else
       logger.debug("doesn't exist")
       GoogleGroupsApi.create_group(self)
+      self.update_attribute(:exists_on_google, true)
     end
   end
   
@@ -124,8 +118,12 @@ class Group < ActiveRecord::Base
     self.send_later(:delete_google_group)
   end
   
+  def queue_create_google_group
+    self.send_later(:create_google_group)
+  end
+  
   def delete_google_group
-    GoogleGroupsApi.delete_group(group_id)
+    GoogleGroupsApi.delete_group(self)
   end
   
   protected

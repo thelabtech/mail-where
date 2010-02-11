@@ -39,6 +39,8 @@ class GoogleGroupsApi
     atom += '</atom:entry>'
 
     c = post("https://apps-apis.google.com/a/feeds/group/2.0/cojourners.com/#{group.group_id}/owner", atom)
+    
+    add_to_shared_contacts(group)
   end
   
   def self.update_group(group)
@@ -58,8 +60,9 @@ class GoogleGroupsApi
     !feed.links.empty?
   end
   
-  def self.delete_group(group_id)
-    delete("https://apps-apis.google.com/a/feeds/group/2.0/cojourners.com/#{group_id}")
+  def self.delete_group(group)
+    delete("https://apps-apis.google.com/a/feeds/group/2.0/cojourners.com/#{group.group_id}")
+    delete_shared_contact(group)
   end
   
   def self.delete_member(member_id, group_id)
@@ -89,9 +92,13 @@ class GoogleGroupsApi
     group.update_attribute(:contact_id, feed.id)
   end
   
+  def self.delete_shared_contact(group)
+    response = contact_delete(group.contact_id)
+  end
+  
   protected 
     def self.post(url, data)
-      response = `curl -X POST #{curl_headers} #{url} #{data_clause(data)}`
+      response = `curl -X POST #{curl_headers} #{url} #{data_clause(data)} -x proxy.ccci.org:8080`
       Rails.logger.debug('=================================================')
       Rails.logger.debug(url)
       Rails.logger.debug(response)
@@ -101,7 +108,7 @@ class GoogleGroupsApi
     end
     
     def self.contact_post(url, data)
-      response = `curl -X POST #{curl_contact_headers} #{url} #{data_clause(data)}`
+      response = `curl -X POST #{curl_contact_headers} #{url} #{data_clause(data)} -x proxy.ccci.org:8080`
       Rails.logger.debug('=================================================')
       Rails.logger.debug(url)
       Rails.logger.debug(response)
@@ -156,6 +163,10 @@ class GoogleGroupsApi
     
     def self.delete(url)
       `curl -X DELETE #{curl_headers} #{url}`
+    end
+        
+    def self.contact_delete(url)
+      `curl -X DELETE #{curl_contact_headers} #{url}`
     end
     
     def self.curl_headers
