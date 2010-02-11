@@ -9,7 +9,11 @@ class GoogleGroupsApi
                                                                      'Passwd=CCCroxyoursox',
                                                                      'accountType=HOSTED',
                                                                      'service=apps'])
-      @@auth = response.split("\n").last.split('=').last
+      begin
+        @@auth = response.split("\n").last.split('=').last
+      rescue
+        raise @@auth.inspect
+      end
       @@auth_updated_at = Time.now
     end
     @@auth
