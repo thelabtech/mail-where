@@ -1,25 +1,9 @@
 class GoogleGroupsApi
   @@auth = nil
   @@auth_updated_at = nil
+  @@contact_auth = nil
+  @@contact_auth_updated_at = nil
   @@groups = nil
-  
-  def self.auth
-    if !@@auth || !@@auth_updated_at || @@auth_updated_at < 23.hours.ago
-      auth_response = ''
-      auth_response = post_no_auth("https://www.google.com/accounts/ClientLogin", ['Email=admin@cojourners.com',
-                                                                     'Passwd=CCCroxyoursox',
-                                                                     'accountType=HOSTED',
-                                                                     'service=apps'])
-    
-      begin
-        @@auth = auth_response.split("\n").last.split('=').last
-      rescue
-        raise auth_response.inspect
-      end
-      @@auth_updated_at = Time.now
-    end
-    @@auth
-  end
   
   def self.groups
     unless @@groups
@@ -91,16 +75,18 @@ class GoogleGroupsApi
   end
   
   def self.add_to_shared_contacts(group)
-    # atom = "<atom:entry xmlns:atom='http://www.w3.org/2005/Atom'
-    #           xmlns:gd='http://schemas.google.com/g/2005'>
-    #         <atom:category scheme='http://schemas.google.com/g/2005#kind'
-    #           term='http://schemas.google.com/contact/2008#contact' />
-    #         <atom:title type='text'>#{group.group_name}</atom:title>
-    #         <gd:email rel='http://schemas.google.com/g/2005#home'
-    #           address='#{group.group_id}@cojourners.com' />
-    #       </atom:entry>"
-    # 
-    # c = post("http://www.google.com/m8/feeds/contacts/cojourners.com/full", atom)
+    atom = "<atom:entry xmlns:atom='http://www.w3.org/2005/Atom'
+              xmlns:gd='http://schemas.google.com/g/2005'>
+            <atom:category scheme='http://schemas.google.com/g/2005#kind'
+              term='http://schemas.google.com/contact/2008#contact' />
+            <atom:title type='text'>#{group.group_name}</atom:title>
+            <gd:email rel='http://schemas.google.com/g/2005#home'
+              address='#{group.group_id}@cojourners.com' />
+          </atom:entry>"
+    
+    response = contact_post("http://www.google.com/m8/feeds/contacts/cojourners.com/full", atom)
+    feed = Atom::Feed.new(response)
+    group.update_attribute(:contact_id, feed.id)
   end
   
   protected 
@@ -114,8 +100,44 @@ class GoogleGroupsApi
       response
     end
     
+    def self.contact_post(url, data)
+      response = `curl -X POST #{curl_contact_headers} #{url} #{data_clause(data)} -x proxy.ccci.org:8080`
+      Rails.logger.debug('=================================================')
+      Rails.logger.debug(url)
+      Rails.logger.debug(response)
+      Rails.logger.debug(data)
+      Rails.logger.debug('=================================================')
+      response
+    end
+    
     def self.post_no_auth(url, data)
       response = `curl -X POST #{url} #{data_clause(data)}`
+    end
+    
+    def self.contact_auth
+      if !@@contact_auth || !@@contact_auth_updated_at || @@contact_auth_updated_at < 23.hours.ago
+        auth_response = ` curl -X POST https://www.google.com/accounts/ClientLogin -d accountType=HOSTED -d Email=admin@cojourners.com -d Passwd=CCCroxyoursox -d service=cp -d source=ccc-mailWhere`
+        @@contact_auth = auth_response.split("\n").last.split('=').last
+        @@contact_auth_updated_at = Time.now
+      end
+      @@contact_auth
+    end
+    
+    def self.auth
+      if !@@auth || !@@auth_updated_at || @@auth_updated_at < 23.hours.ago
+        auth_response = post_no_auth("https://www.google.com/accounts/ClientLogin", ['Email=admin@cojourners.com',
+                                                                       'Passwd=CCCroxyoursox',
+                                                                       'accountType=HOSTED',
+                                                                       'service=apps'])
+    
+        begin
+          @@auth = auth_response.split("\n").last.split('=').last
+        rescue
+          raise auth_response.inspect
+        end
+        @@auth_updated_at = Time.now
+      end
+      @@auth
     end
     
     def self.get(url)
@@ -140,11 +162,8 @@ class GoogleGroupsApi
       "--header \"Content-type: application/atom+xml\" --header \"Authorization: GoogleLogin auth=#{auth}\""
     end
     
-    def self.set_headers(curl)
-      curl.headers["Content-type"] = "application/atom+xml"
-      curl.headers["Authorization"] = "GoogleLogin auth=#{auth}"
-      curl.verbose = true
-      curl 
+    def self.curl_contact_headers
+      "--header \"Content-type: application/atom+xml\" --header \"Authorization: GoogleLogin auth=#{contact_auth}\""
     end
     
     def self.data_clause(data)

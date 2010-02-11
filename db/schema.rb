@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100210132657) do
+ActiveRecord::Schema.define(:version => 20100211204243) do
 
   create_table "academic_departments", :force => true do |t|
     t.string "name"
@@ -3007,7 +3007,8 @@ ActiveRecord::Schema.define(:version => 20100210132657) do
     t.datetime "updated_at"
     t.text     "email_query"
     t.integer  "exists_on_google",  :limit => 1, :default => 0
-    t.string   "update_interval"
+    t.string   "update_interval",                :default => "Daily"
+    t.string   "contact_id"
   end
 
   add_index "mail_groups", ["group_id"], :name => "index_mail_groups_on_group_id"
