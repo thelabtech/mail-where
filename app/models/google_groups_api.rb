@@ -6,11 +6,14 @@ class GoogleGroupsApi
   def self.auth
     if !@@auth || !@@auth_updated_at || @@auth_updated_at < 23.hours.ago
       auth_response = ''
-      while auth_response == '' do
+      tries = 0
+      while auth_response == '' and tries < 5 do
+        tries += 1
         auth_response = post_no_auth("https://www.google.com/accounts/ClientLogin", ['Email=admin@cojourners.com',
                                                                        'Passwd=CCCroxyoursox',
                                                                        'accountType=HOSTED',
                                                                        'service=apps'])
+        logger.debug("why is auth_response blank") if auth_response == ''
       end
       
       begin
