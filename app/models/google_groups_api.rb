@@ -5,15 +5,19 @@ class GoogleGroupsApi
   
   def self.auth
     if !@@auth || !@@auth_updated_at || @@auth_updated_at < 23.hours.ago
-      response = post_no_auth("https://www.google.com/accounts/ClientLogin", ['Email=admin@cojourners.com',
-                                                                     'Passwd=CCCroxyoursox',
-                                                                     'accountType=HOSTED',
-                                                                     'service=apps'])
+      auth_response = ''
+      while auth_response == ''
+        auth_response = post_no_auth("https://www.google.com/accounts/ClientLogin", ['Email=admin@cojourners.com',
+                                                                       'Passwd=CCCroxyoursox',
+                                                                       'accountType=HOSTED',
+                                                                       'service=apps'])
+      end
+      
       begin
-        @@auth = response.split("\n").last.split('=').last
+        @@auth = auth_response.split("\n").last.split('=').last
       rescue
         raise response.inspect
-      end
+      auth_response
       @@auth_updated_at = Time.now
     end
     @@auth
