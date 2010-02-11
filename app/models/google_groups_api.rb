@@ -91,7 +91,7 @@ class GoogleGroupsApi
   
   protected 
     def self.post(url, data)
-      response = `curl -X POST #{curl_headers} #{url} #{data_clause(data)} -x proxy.ccci.org:8080`
+      response = `curl -X POST #{curl_headers} #{url} #{data_clause(data)}`
       Rails.logger.debug('=================================================')
       Rails.logger.debug(url)
       Rails.logger.debug(response)
@@ -101,7 +101,7 @@ class GoogleGroupsApi
     end
     
     def self.contact_post(url, data)
-      response = `curl -X POST #{curl_contact_headers} #{url} #{data_clause(data)} -x proxy.ccci.org:8080`
+      response = `curl -X POST #{curl_contact_headers} #{url} #{data_clause(data)}`
       Rails.logger.debug('=================================================')
       Rails.logger.debug(url)
       Rails.logger.debug(response)

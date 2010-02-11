@@ -1,17 +1,18 @@
+<% params[:order] ||= 'group_name' %>
 <th>
-    <a href="#">Group Name</a>
+  <%= link_to('Group Name', groups_path(:order => params[:order] == 'group_name' ? 'group_name desc' : 'group_name')) %>
 </th>
 
 <th>
-    <a href="#">Group Email</a>
+  <%= link_to('Group Email', groups_path(:order => params[:order] == 'group_id' ? 'group_id desc' : 'group_id')) %>
 </th>
 
 <th>
-    <a href="#">Description</a>
+  Description
 </th>
 
 <th>
-    <a href="#">Permissions</a>
+  <%= link_to('Permissions', groups_path(:order => params[:order] == 'email_permission' ? 'email_permission desc' : 'email_permission')) %>
 </th>
 
 <th></th>

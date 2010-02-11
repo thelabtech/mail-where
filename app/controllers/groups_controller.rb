@@ -3,7 +3,7 @@ class GroupsController < ApplicationController
   # GET /groups
   # GET /groups.xml
   def index
-    @groups = Group.order(:group_name).paginate(:page => params[:page])
+    @groups = Group.order(params[:order] || :group_name).paginate(:page => params[:page])
 
     respond_to do |format|
       format.html # index.html.erb
