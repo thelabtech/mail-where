@@ -2,7 +2,7 @@ class Group < ActiveRecord::Base
   set_table_name 'mail_groups'
   has_many :members, :dependent => :delete_all
   validates_presence_of :group_id, :group_name, :group_description
-  validates_format_of :group_id, :with => /^([^\s]+)$/i
+  validates_format_of :group_id, :with => /^[\w\.%\+\-]+$/i
   validates_uniqueness_of :group_id, :group_name, :on => :create, :message => "must be unique"
   after_save :queue_delayed_jobs
   before_destroy :queue_delete_google_group

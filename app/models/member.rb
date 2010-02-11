@@ -2,7 +2,7 @@ class Member < ActiveRecord::Base
   set_table_name 'mail_members'
   belongs_to :group
   validates_presence_of :email
-  validates_format_of :email, :with => /^([^\s]+)((?:[-a-z0-9]\.)[a-z]{2,})$/i
+  validates_format_of :email, :with => /\A[\w\.%\+\-]+@(?:[A-Z0-9\-]+\.)+(?:[A-Z]{2}|com|org|net|edu|gov|mil|biz|info|mobi|name|aero|jobs|museum)\z/i
   validates_uniqueness_of :email, :scope => :group_id, :message => "is already on the list"
   
   after_save :add_to_google
