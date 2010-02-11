@@ -16,8 +16,8 @@ class GoogleGroupsApi
       begin
         @@auth = auth_response.split("\n").last.split('=').last
       rescue
-        raise response.inspect
-      auth_response
+        raise auth_response.inspect
+      end
       @@auth_updated_at = Time.now
     end
     @@auth
