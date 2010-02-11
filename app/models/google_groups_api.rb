@@ -90,9 +90,22 @@ class GoogleGroupsApi
     c = post("https://apps-apis.google.com/a/feeds/group/2.0/cojourners.com/#{group_id}/member", atom)
   end
   
+  def self.add_to_shared_contacts(group)
+    # atom = "<atom:entry xmlns:atom='http://www.w3.org/2005/Atom'
+    #           xmlns:gd='http://schemas.google.com/g/2005'>
+    #         <atom:category scheme='http://schemas.google.com/g/2005#kind'
+    #           term='http://schemas.google.com/contact/2008#contact' />
+    #         <atom:title type='text'>#{group.group_name}</atom:title>
+    #         <gd:email rel='http://schemas.google.com/g/2005#home'
+    #           address='#{group.group_id}@cojourners.com' />
+    #       </atom:entry>"
+    # 
+    # c = post("http://www.google.com/m8/feeds/contacts/cojourners.com/full", atom)
+  end
+  
   protected 
     def self.post(url, data)
-      response = `curl -X POST #{curl_headers} #{url} #{data_clause(data)}`
+      response = `curl -X POST #{curl_headers} #{url} #{data_clause(data)} -x proxy.ccci.org:8080`
       Rails.logger.debug('=================================================')
       Rails.logger.debug(url)
       Rails.logger.debug(response)

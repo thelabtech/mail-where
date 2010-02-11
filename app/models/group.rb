@@ -68,6 +68,7 @@ class Group < ActiveRecord::Base
   
   def create_google_group
     GoogleGroupsApi.create_group(self)
+    GoogleGroupsApi.add_to_shared_contacts(self)
     self.exists_on_google = true
   end
   
@@ -84,7 +85,7 @@ class Group < ActiveRecord::Base
   def update_members
     if email_query.present? && addresses != query_error && (old_addresses != addresses)
       to_delete = old_addresses - addresses
-      Member.delete_all({:id => to_delete, :group_id => self.id})
+      Member.delete_all({:id => to_delete, :group_id => self.id}) if to_delete.present?
       
       to_add = addresses - old_addresses
       to_add.each {|a| self.members.create(:email => a)}
