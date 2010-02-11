@@ -6,7 +6,7 @@ class Group < ActiveRecord::Base
   validates_uniqueness_of :group_id, :on => :create, :message => "must be unique"
   after_validation :create_google_group, :on => :create
   after_save :queue_delayed_jobs, :update_members
-  before_destroy :delete_google_group
+  before_destroy :queue_delete_google_group
   
   scope :daily_updates, where(:update_interval => 'Daily')
   scope :weekly_updates, where(:update_interval => 'Weekly')
@@ -117,6 +117,10 @@ class Group < ActiveRecord::Base
   def queue_delayed_jobs
     self.send_later(:update_google_group)
     self.send_later(:update_google_members)
+  end
+  
+  def queue_delete_google_group
+    self.send_later(:delete_google_group)
   end
   
   def delete_google_group
