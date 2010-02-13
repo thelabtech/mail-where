@@ -7,7 +7,8 @@ class Group < ActiveRecord::Base
   validates_each :group_id do |record, attr, value|
     record.errors.add attr, 'cannot start with the word "test"' if value.to_s[0..3] == 'test'
   end
-  after_save :update_members, :queue_update_google_group
+  after_validation :update_members, :queue_update_google_group, :on => :update
+  after_create :update_members, :queue_update_google_group
   
   before_destroy :queue_delete_google_group
   
@@ -37,7 +38,7 @@ class Group < ActiveRecord::Base
   end
   
   def members_from_google
-    @members ||=  GoogleGroupsApi.members(self)
+    @members_from_google ||=  GoogleGroupsApi.members(self)
   end
   
   def all_addresses
@@ -80,8 +81,8 @@ class Group < ActiveRecord::Base
       rescue EntityExists
         GoogleGroupsApi.update_group(self)
       end
-      update_attribute(:exists_on_google, true)
     end
+    update_attribute(:exists_on_google, true)
     update_google_members
   end
   
