@@ -2,9 +2,13 @@ class Group < ActiveRecord::Base
   set_table_name 'mail_groups'
   has_many :members, :dependent => :delete_all
   validates_presence_of :group_id, :group_name, :group_description
-  validates_format_of :group_id, :with => /^[\w\.%\+\-]+$/i
+  # validates_format_of :group_id, :with => /^[\w\.%\+\-]+$/i
+  validates_format_of :group_id, :with => /\A^(test).*\Z/i, :on => :create, :message => "can't start with the word 'test'"
   validates_uniqueness_of :group_id, :group_name, :on => :create, :message => "must be unique"
-  after_save :queue_delayed_jobs
+  validates_each :group_id do |record, attr, value|
+    record.errors.add attr, 'cannot start with the word "test"' if value =~ /^test/i
+  end
+  after_validation :update_members, :queue_update_google_group
   before_destroy :queue_delete_google_group
   
   scope :daily_updates, where(:update_interval => 'Daily')
@@ -33,7 +37,7 @@ class Group < ActiveRecord::Base
   end
   
   def members_from_google
-    @members ||=  GoogleGroupsApi.members(group_id)
+    @members ||=  GoogleGroupsApi.members(self)
   end
   
   def all_addresses
@@ -71,9 +75,14 @@ class Group < ActiveRecord::Base
       GoogleGroupsApi.update_group(self)
     else
       logger.debug("doesn't exist")
-      GoogleGroupsApi.create_group(self)
-      self.update_attribute(:exists_on_google, true)
+      begin
+        GoogleGroupsApi.create_group(self)
+      rescue EntityExists
+        GoogleGroupsApi.update_group(self)
+      end
+      update_attribute(:exists_on_google, true)
     end
+    update_google_members
   end
   
   def update_members
@@ -90,7 +99,7 @@ class Group < ActiveRecord::Base
     to_delete = members_from_google - all_addresses
     logger.debug(to_delete.inspect)
     to_delete.map {|m| GoogleGroupsApi.delete_member(m, group_id)}
-    
+  
     to_add = all_addresses - members_from_google
     logger.debug(to_add.inspect)
     to_add.map {|m| GoogleGroupsApi.add_member(m, group_id)}
@@ -109,17 +118,13 @@ class Group < ActiveRecord::Base
     self.send_later(:update_google_members)
   end
   
-  def queue_delayed_jobs
+  def queue_update_google_group
     self.send_later(:update_google_group)
-    self.send_later(:update_google_members)
   end
   
   def queue_delete_google_group
-    self.send_later(:delete_google_group)
-  end
-  
-  def queue_create_google_group
-    self.send_later(:create_google_group)
+    self.send_later(:delete_google_group, group_id)
+    self.send_later(:delete_shared_contact, contact_id) if contact_id.present?
   end
   
   def delete_google_group

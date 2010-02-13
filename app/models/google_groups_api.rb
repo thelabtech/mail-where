@@ -1,26 +1,33 @@
+require 'net/http'
+require 'uri'
+class EntityExists < StandardError; end
+class EntityDoesNotExist < StandardError; end
 class GoogleGroupsApi
   @@auth = nil
   @@auth_updated_at = nil
   @@contact_auth = nil
   @@contact_auth_updated_at = nil
-  @@groups = nil
+  @@http = {}
   
   def self.groups
-    unless @@groups
-      response = get("https://apps-apis.google.com/a/feeds/group/2.0/cojourners.com")
-      feed = Atom::Feed.new(response)
-      @@groups = feed.entries.collect {|e| GoogleGroup.new(e)}
-    end
+    response = get('apps-apis.google.com', '/a/feeds/group/2.0/cojourners.com')
+    feed = Atom::Feed.new(response)
+    feed.entries.collect {|e| GoogleGroup.new(e)}
   end
   
-  def self.members(group_id)
+  def self.members(group)
     members = []
-    response = get("https://apps-apis.google.com/a/feeds/group/2.0/cojourners.com/#{group_id}/member")
-    feed = Atom::Feed.new(response)
-    feed.entries.each do |entry|
-      members << entry.extended_elements.detect {|ee| ee.attributes['name'] == 'memberId'}.attributes['value']
+    begin
+      response = get('apps-apis.google.com', "/a/feeds/group/2.0/cojourners.com/#{group.group_id}/member")
+      feed = Atom::Feed.new(response)
+      feed.entries.each do |entry|
+        members << entry.extended_elements.detect {|ee| ee.attributes['name'] == 'memberId'}.attributes['value']
+      end
+      members
+    rescue EntityDoesNotExist
+      create_group(group)
+      retry
     end
-    members
   end
   
   def self.create_group(group)
@@ -31,14 +38,14 @@ class GoogleGroupsApi
     atom += "<apps:property name=\"emailPermission\" value=\"#{group.email_permission}\"></apps:property>"
     atom += '</atom:entry>'
 
-    c = post("https://apps-apis.google.com/a/feeds/group/2.0/cojourners.com", atom)
+    c = post('apps-apis.google.com', '/a/feeds/group/2.0/cojourners.com', atom)
 
     # Add an owner
     atom = '<atom:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:apps="http://schemas.google.com/apps/2006" xmlns:gd="http://schemas.google.com/g/2005">'
     atom += '<apps:property name="email" value="admin@cojourners.com"/>'
     atom += '</atom:entry>'
 
-    c = post("https://apps-apis.google.com/a/feeds/group/2.0/cojourners.com/#{group.group_id}/owner", atom)
+    c = post("apps-apis.google.com", "/a/feeds/group/2.0/cojourners.com/#{group.group_id}/owner", atom)
     
     add_to_shared_contacts(group)
   end
@@ -51,22 +58,24 @@ class GoogleGroupsApi
     atom += "<apps:property name=\"emailPermission\" value=\"#{group.email_permission}\"></apps:property>"
     atom += '</atom:entry>'
 
-    put("https://apps-apis.google.com/a/feeds/group/2.0/cojourners.com/#{group.group_id}", atom)
+    put("apps-apis.google.com", "/a/feeds/group/2.0/cojourners.com/#{group.group_id}", atom)
   end
   
   def self.group_exists?(group_id)
-    response = get("https://apps-apis.google.com/a/feeds/group/2.0/cojourners.com/#{group_id}")
-    feed = Atom::Feed.new(response)
-    !feed.links.empty?
+    begin
+      response = get("apps-apis.google.com", "/a/feeds/group/2.0/cojourners.com/#{group_id}")
+      true
+    rescue EntityDoesNotExist
+      false
+    end
   end
   
-  def self.delete_group(group)
-    delete("https://apps-apis.google.com/a/feeds/group/2.0/cojourners.com/#{group.group_id}")
-    delete_shared_contact(group)
+  def self.delete_group(group_id)
+    delete("apps-apis.google.com", "/a/feeds/group/2.0/cojourners.com/#{group_id}")
   end
   
   def self.delete_member(member_id, group_id)
-    delete("https://apps-apis.google.com/a/feeds/group/2.0/cojourners.com/#{group_id}/member/#{member_id}")
+    delete("apps-apis.google.com", "/a/feeds/group/2.0/cojourners.com/#{group_id}/member/#{member_id}")
   end
   
   def self.add_member(member_id, group_id)
@@ -74,7 +83,7 @@ class GoogleGroupsApi
     atom += "<apps:property name=\"memberId\" value=\"#{member_id}\"/>"
     atom += '</atom:entry>'
     
-    c = post("https://apps-apis.google.com/a/feeds/group/2.0/cojourners.com/#{group_id}/member", atom)
+    post("apps-apis.google.com", "/a/feeds/group/2.0/cojourners.com/#{group_id}/member", atom)
   end
   
   def self.add_to_shared_contacts(group)
@@ -87,43 +96,27 @@ class GoogleGroupsApi
               address='#{group.group_id}@cojourners.com' />
           </atom:entry>"
     
-    response = contact_post("http://www.google.com/m8/feeds/contacts/cojourners.com/full", atom)
+    response = post("www.google.com", "/m8/feeds/contacts/cojourners.com/full", atom, true, true)
     feed = Atom::Feed.new(response)
     group.update_attribute(:contact_id, feed.id)
   end
   
-  def self.delete_shared_contact(group)
-    response = contact_delete(group.contact_id)
+  def self.delete_shared_contact(contact_id)
+    uri = URI.parse(contact_id)
+    # Get edit url from existing contact
+    response = get(uri.host, uri.path, nil, true, true)
+    feed = Atom::Feed.new(response)
+    edit_link = feed.links.detect {|l| l.rel == 'edit'}.href
+    
+    # delete contact
+    uri = URI.parse(edit_link)
+    delete(uri.host, uri.path, nil, true, true)
   end
   
   protected 
-    def self.post(url, data)
-      response = `curl -X POST #{curl_headers} #{url} #{data_clause(data)} -x proxy.ccci.org:8080`
-      Rails.logger.debug('=================================================')
-      Rails.logger.debug(url)
-      Rails.logger.debug(response)
-      Rails.logger.debug(data)
-      Rails.logger.debug('=================================================')
-      response
-    end
-    
-    def self.contact_post(url, data)
-      response = `curl -X POST #{curl_contact_headers} #{url} #{data_clause(data)} -x proxy.ccci.org:8080`
-      Rails.logger.debug('=================================================')
-      Rails.logger.debug(url)
-      Rails.logger.debug(response)
-      Rails.logger.debug(data)
-      Rails.logger.debug('=================================================')
-      response
-    end
-    
-    def self.post_no_auth(url, data)
-      response = `curl -X POST #{url} #{data_clause(data)}`
-    end
-    
     def self.contact_auth
       if !@@contact_auth || !@@contact_auth_updated_at || @@contact_auth_updated_at < 23.hours.ago
-        auth_response = ` curl -X POST https://www.google.com/accounts/ClientLogin -d accountType=HOSTED -d Email=admin@cojourners.com -d Passwd=CCCroxyoursox -d service=cp -d source=ccc-mailWhere`
+        auth_response = post('www.google.com','/accounts/ClientLogin', {'Email'=>'admin@cojourners.com', 'Passwd'=>'CCCroxyoursox', 'accountType' => 'HOSTED', 'service' => 'cp', 'source' => 'ccc-mailWhere'}, false)
         @@contact_auth = auth_response.split("\n").last.split('=').last
         @@contact_auth_updated_at = Time.now
       end
@@ -132,54 +125,81 @@ class GoogleGroupsApi
     
     def self.auth
       if !@@auth || !@@auth_updated_at || @@auth_updated_at < 23.hours.ago
-        auth_response = post_no_auth("https://www.google.com/accounts/ClientLogin", ['Email=admin@cojourners.com',
-                                                                       'Passwd=CCCroxyoursox',
-                                                                       'accountType=HOSTED',
-                                                                       'service=apps'])
-    
-        begin
-          @@auth = auth_response.split("\n").last.split('=').last
-        rescue
-          raise auth_response.inspect
-        end
+        auth_response = post('www.google.com','/accounts/ClientLogin', {'Email'=>'admin@cojourners.com', 'Passwd'=>'CCCroxyoursox', 'accountType' => 'HOSTED', 'service' => 'apps'}, false)
+        @@auth = auth_response.split("\n").last.split('=').last
         @@auth_updated_at = Time.now
       end
       @@auth
     end
     
-    def self.get(url)
-      response = `curl #{curl_headers} #{url}`
-      
-      Rails.logger.debug('=================================================')
-      Rails.logger.debug(url)
-      Rails.logger.debug(response.inspect)
-      Rails.logger.debug('=================================================')
-      response
+    def self.send_request(host, req, data, authenticate, contact_auth)
+      authenticate!(req, contact_auth) if authenticate
+      if data
+        if data.is_a?(Hash)
+          req.set_form_data(data)
+        else
+          req.body = data
+          req.set_content_type("application/atom+xml")
+        end
+      end
+      response = http_with_host(host).start {|http| http.request(req) }
+      if response.is_a?(Net::HTTPSuccess)
+        response.body
+      else
+        if response.code == '400'
+          doc = Nokogiri::XML.parse(response.body)
+          error = doc.at('error')
+          if error
+            case error.attributes['reason'].value
+            when 'EntityExists'
+              raise EntityExists, error
+            when 'EntityDoesNotExist'
+              raise EntityDoesNotExist, error
+            else
+              raise standard_error(response)
+            end
+          else
+            raise standard_error(response)
+          end
+        else
+          raise standard_error(response)
+        end
+      end
+
     end
     
-    def self.put(url, data)
-      `curl -X PUT #{curl_headers} #{url} #{data_clause(data)}`
+    def self.standard_error(response)
+      response.code.inspect + ": " + response.message.inspect + ": " + response.body.inspect
     end
     
-    def self.delete(url)
-      `curl -X DELETE #{curl_headers} #{url}`
-    end
-        
-    def self.contact_delete(url)
-      `curl -X DELETE #{curl_contact_headers} #{url}`
-    end
-    
-    def self.curl_headers
-      "--header \"Content-type: application/atom+xml\" --header \"Authorization: GoogleLogin auth=#{auth}\""
+    def self.http_with_host(host)
+      unless @@http[host]
+        @@http[host] = Net::HTTP.new(host, 443)
+        @@http[host].use_ssl = true
+        @@http[host].verify_mode = OpenSSL::SSL::VERIFY_NONE
+      end
+      @@http[host]
     end
     
-    def self.curl_contact_headers
-      "--header \"Content-type: application/atom+xml\" --header \"Authorization: GoogleLogin auth=#{contact_auth}\""
+
+    def self.request_method(verb)
+      Net::HTTP.const_get(verb.to_s.capitalize)
     end
     
-    def self.data_clause(data)
-      data = Array.wrap(data)
-      data_clause = data.collect {|d| "-d \"#{d.gsub('"','\"')}\""}.join(' ')
+    def self.authenticate!(request, use_contact_auth)
+      if use_contact_auth
+        request['Authorization'] = "GoogleLogin auth=#{contact_auth}"
+      else
+        request['Authorization'] = "GoogleLogin auth=#{auth}"
+      end
     end
-      
+    
+    [:get, :post, :put, :delete].each do |verb|
+      class_eval(<<-EVAL, __FILE__, __LINE__)
+        def self.#{verb}(host, path, data = nil, authenticate = true, contact_auth = false)
+          req = request_method(:#{verb}).new(path)
+          send_request(host, req, data, authenticate, contact_auth)
+        end
+      EVAL
+    end
 end
