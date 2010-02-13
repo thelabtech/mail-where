@@ -8,7 +8,8 @@ class Group < ActiveRecord::Base
     record.errors.add attr, 'cannot start with the word "test"' if value.to_s[0..3] == 'test'
   end
   after_validation :update_members, :queue_update_google_group, :on => :update
-  after_create :update_members, :queue_update_google_group
+  after_validation :create_google_group, :on => :create
+  after_create :update_members, :queue_update_google_members
   
   before_destroy :queue_delete_google_group
   
@@ -70,17 +71,22 @@ class Group < ActiveRecord::Base
     @old_addresses
   end
   
+  def create_google_group
+    begin
+      GoogleGroupsApi.create_group(self)
+    rescue EntityExists
+      self.update_attribute(:exists_on_google, true) unless new_record?
+      raise
+    end
+  end
+  
   def update_google_group
     if GoogleGroupsApi.group_exists?(group_id)
       logger.debug("group exists")
       GoogleGroupsApi.update_group(self)
     else
       logger.debug("doesn't exist")
-      begin
-        GoogleGroupsApi.create_group(self)
-      rescue EntityExists
-        GoogleGroupsApi.update_group(self)
-      end
+      create_google_group
     end
     update_attribute(:exists_on_google, true)
     update_google_members
@@ -121,6 +127,10 @@ class Group < ActiveRecord::Base
   
   def queue_update_google_group
     self.send_later(:update_google_group)
+  end
+  
+  def queue_update_google_members
+    self.send_later(:update_google_members)
   end
   
   def queue_delete_google_group

@@ -357,6 +357,12 @@ form.basic {}
       margin-top: 3px;
       background: #FDFF8E;
       padding: 2px 5px 0; }
+    #reports ul.error li {
+      float: left;
+      clear: both;
+      margin-top: 3px;
+      background: pink;
+      padding: 2px 5px 0; }
 
 div.destruction {
   margin-top: 4em;

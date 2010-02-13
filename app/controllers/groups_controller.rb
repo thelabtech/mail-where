@@ -54,6 +54,11 @@ class GroupsController < ApplicationController
         format.xml  { render :xml => @group.errors, :status => :unprocessable_entity }
       end
     end
+  rescue EntityExists
+    flash[:error] = "A group or email address with this name already exists. Please come up with a different group email address." 
+    respond_to do |wants|
+      wants.html { render :action => "new"}
+    end
   end
 
   # PUT /groups/1
