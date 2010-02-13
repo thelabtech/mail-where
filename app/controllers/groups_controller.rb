@@ -47,7 +47,7 @@ class GroupsController < ApplicationController
 
     respond_to do |format|
       if @group.save
-        format.html { redirect_to(@group, :notice => 'Group was successfully created.') }
+        format.html { redirect_to(@group, :notice => 'Group was successfully created. Be aware that it may take up to 1 hour for the email addresses to update on the mail server depending on the number of addresses.') }
         format.xml  { render :xml => @group, :status => :created, :location => @group }
       else
         format.html { render :action => "new" }
@@ -61,7 +61,7 @@ class GroupsController < ApplicationController
   def update
     respond_to do |format|
       if @group.update_attributes(params[:group])
-        format.html { redirect_to(@group, :notice => 'Group was successfully updated.') }
+        format.html { redirect_to(@group, :notice => 'Group was successfully updated. Be aware that it may take up to 1 hour for the email addresses to update on the mail server depending on the number of addresses.') }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }
@@ -84,8 +84,7 @@ class GroupsController < ApplicationController
 
   def refresh
     @group.refresh!
-    flash[:notice] = "This group is up to date."
-    redirect_to :back
+    redirect_to :back, :notice => 'Group was successfully updated. Be aware that it may take up to 1 hour for the email addresses to update on the mail server depending on the number of addresses.'
   end
   
   protected
