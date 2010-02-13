@@ -73,7 +73,11 @@ class GoogleGroupsApi
   end
   
   def self.delete_group(group_id)
-    delete("apps-apis.google.com", "/a/feeds/group/2.0/cojourners.com/#{group_id}")
+    begin
+      delete("apps-apis.google.com", "/a/feeds/group/2.0/cojourners.com/#{group_id}")
+    rescue
+      # Fail silently if we can't delete the group from google.
+    end
   end
   
   def self.delete_member(member_id, group_id)
