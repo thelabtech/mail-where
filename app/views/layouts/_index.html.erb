@@ -14,7 +14,7 @@
     </thead>
     <tbody>
       <%- models.each do |model| %>
-        <tr id="<%= dom_id(model) %>" class="<%= cycle('odd','even') %> <%= model.class.to_s.underscore %>" data-param="<%= model.to_param %>">
+        <tr id="<%= dom_id(model) %>" class="listing <%= cycle('odd','even') %> <%= model.class.to_s.underscore %>" data-param="<%= model.to_param %>" data-href="<%= eval("#{model.class.to_s.underscore}_path(model)") %>">
           <%= render :partial => "listing", :object => model %>
         </tr>
       <% end %>

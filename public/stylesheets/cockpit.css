@@ -458,10 +458,13 @@ div.tag_field .caption {
     line-height: 1.4em; }
   .content table.listing td.active, .content table.listing td.ordinal, .content table.listing td.boolean, .content table.listing td.photos, .content table.listing td.blogs_count, .content table.listing td.features_count {
     text-align: center; }
-  .content table.listing tr.odd td {
+  .content table.listing tr.odd {
     background-color: #f3f3f3; }
   .content table.listing tr.dragging td {
     background-color: #d3d3d3; }
+  .content table.listing tr:hover {
+		cursor: pointer;
+    background-color: yellow; }
   .content table.listing td.button {
     padding: 2px; }
     .content table.listing td.button a {

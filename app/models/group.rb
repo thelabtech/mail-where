@@ -1,5 +1,6 @@
 class Group < ActiveRecord::Base
   set_table_name 'mail_groups'
+  belongs_to :user
   has_many :members, :dependent => :delete_all
   validates_presence_of :group_id, :group_name, :group_description
   validates_format_of :group_id, :with => /^[\w\.%\+\-]+$/i
@@ -9,7 +10,7 @@ class Group < ActiveRecord::Base
   end
   after_validation :update_members, :queue_update_google_group, :on => :update
   after_validation :create_google_group, :on => :create
-  after_create :update_members, :queue_update_google_members
+  after_create :update_members, :queue_user_and_shared_contact, :queue_update_google_members
   
   before_destroy :queue_delete_google_group
   
@@ -125,21 +126,26 @@ class Group < ActiveRecord::Base
     self.send_later(:update_google_members)
   end
   
-  def queue_update_google_group
-    self.send_later(:update_google_group)
-  end
-  
-  def queue_update_google_members
-    self.send_later(:update_google_members)
-  end
-  
-  def queue_delete_google_group
-    GoogleGroupsApi.send_later(:delete_group, group_id)
-    GoogleGroupsApi.send_later(:delete_shared_contact, contact_id) if contact_id.present?
-  end
-  
   protected
     def query_error
       ['There was an error running your query']
+    end
+    
+    def queue_user_and_shared_contact
+      GoogleGroupsApi.send_later(:create_shared_contact, self)
+      GoogleGroupsApi.send_later(:add_default_user, group_id)
+    end
+  
+    def queue_update_google_group
+      self.send_later(:update_google_group)
+    end
+  
+    def queue_update_google_members
+      self.send_later(:update_google_members)
+    end
+  
+    def queue_delete_google_group
+      GoogleGroupsApi.send_later(:delete_group, group_id)
+      GoogleGroupsApi.send_later(:delete_shared_contact, contact_id) if contact_id.present?
     end
 end

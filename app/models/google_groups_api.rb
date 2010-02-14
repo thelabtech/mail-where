@@ -1,6 +1,6 @@
 require 'net/http'
 require 'uri'
-class EntityExists < StandardError; end
+
 class EntityDoesNotExist < StandardError; end
 class DuplicateContact < StandardError; end
 
@@ -41,15 +41,14 @@ class GoogleGroupsApi
     atom += '</atom:entry>'
 
     c = post('apps-apis.google.com', '/a/feeds/group/2.0/cojourners.com', atom)
-
-    # Add an owner
+  end
+  
+  def self.add_default_user(group_id)
     atom = '<atom:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:apps="http://schemas.google.com/apps/2006" xmlns:gd="http://schemas.google.com/g/2005">'
     atom += '<apps:property name="email" value="admin@cojourners.com"/>'
     atom += '</atom:entry>'
 
-    c = post("apps-apis.google.com", "/a/feeds/group/2.0/cojourners.com/#{group.group_id}/owner", atom)
-    
-    create_shared_contact(group)
+    c = post("apps-apis.google.com", "/a/feeds/group/2.0/cojourners.com/#{group_id}/user", atom)
   end
   
   def self.update_group(group)

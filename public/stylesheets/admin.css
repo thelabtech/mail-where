@@ -68,3 +68,6 @@ form.standalone_track .toupee-widget .toupee-iframe {
 	top: -217px;
 	left: 500px;
 }
+tr.listing:hover {
+	background: yellow;
+}

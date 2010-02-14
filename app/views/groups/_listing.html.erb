@@ -22,5 +22,5 @@
 </td>
 
 <td class="button delete">
-  <%= link_to('delete', group_path(listing), :title => "Delete this Group", :method => :delete, :confirm => "Are you sure you want to delete that group?") %>
+  <%= link_to('delete', group_path(listing), :title => "Delete this Group", :method => :delete, :confirm => "Are you sure you want to delete that group?") if current_user.admin? || listing.user == current_user %>
 </td>

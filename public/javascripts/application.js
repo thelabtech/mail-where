@@ -14,8 +14,10 @@ $('#extra_addresses li a[data-method="delete"]').live('ajax:complete',
 									);
 
 
-$('#new_member').live('ajax:before', 
-										function() {
-											$('#spinner').show();
-										}
-									);
+$('#new_member').live('ajax:before', function() {
+	$('#spinner').show();
+});
+										
+$('.listing > td.attribute').live('click', function() {
+	document.location = $(this).parent().attr('data-href');
+})

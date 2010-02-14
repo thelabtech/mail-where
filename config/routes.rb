@@ -5,6 +5,8 @@ EmailLists::Application.routes.draw do |map|
     end
     resources :members
   end
+  
+  match 'denied' => 'groups#denied', :as => :denied
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

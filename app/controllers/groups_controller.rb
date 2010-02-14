@@ -44,7 +44,7 @@ class GroupsController < ApplicationController
   # POST /groups.xml
   def create
     @group = Group.new(params[:group])
-
+    @group.user = current_user
     respond_to do |format|
       if @group.save
         format.html { redirect_to(@group, :notice => 'Group was successfully created. Be aware that it may take up to 1 hour for the email addresses to update on the mail server depending on the number of addresses.') }
@@ -78,7 +78,7 @@ class GroupsController < ApplicationController
   # DELETE /groups/1
   # DELETE /groups/1.xml
   def destroy
-    @group = Group.find(params[:id])
+    @group = current_user.admin? ? Group.find(params[:id]) : current_user.groups.find(params[:id])
     @group.destroy
 
     respond_to do |format|
