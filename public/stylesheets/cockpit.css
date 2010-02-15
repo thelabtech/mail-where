@@ -462,7 +462,7 @@ div.tag_field .caption {
     background-color: #f3f3f3; }
   .content table.listing tr.dragging td {
     background-color: #d3d3d3; }
-  .content table.listing tr:hover {
+  .content table.listing tr.listing:hover {
 		cursor: pointer;
     background-color: yellow; }
   .content table.listing td.button {

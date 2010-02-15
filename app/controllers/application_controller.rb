@@ -2,7 +2,7 @@ class ApplicationController < ActionController::Base
   # include ExceptionNotifiable
   before_filter CASClient::Frameworks::Rails::Filter
   before_filter :harvest_cas_attributes
-  before_filter :block_non_staff, :except => :denied
+  before_filter :block_non_staff, :except => :denied if Rails.env.production?
   before_filter :find_or_create_user
   
   protect_from_forgery
