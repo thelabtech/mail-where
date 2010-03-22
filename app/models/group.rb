@@ -5,9 +5,9 @@ class Group < ActiveRecord::Base
   validates_presence_of :group_id, :group_name, :group_description
   validates_format_of :group_id, :with => /^[\w\.%\+\-]+$/i
   validates_uniqueness_of :group_id, :group_name, :on => :create, :message => "must be unique"
-  validates_each :group_id do |record, attr, value|
-    record.errors.add attr, 'cannot start with the word "test"' if value.to_s[0..3] == 'test'
-  end
+  # validates_each :group_id do |record, attr, value|
+  #   record.errors.add attr, 'cannot start with the word "test"' if value.to_s[0..3] == 'test'
+  # end
   after_validation :update_members, :queue_update_google_group, :on => :update
   after_validation :create_google_group, :on => :create
   after_create :update_members, :queue_user_and_shared_contact, :queue_update_google_members

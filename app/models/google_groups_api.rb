@@ -47,8 +47,12 @@ class GoogleGroupsApi
     atom = '<atom:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:apps="http://schemas.google.com/apps/2006" xmlns:gd="http://schemas.google.com/g/2005">'
     atom += '<apps:property name="email" value="admin@cojourners.com"/>'
     atom += '</atom:entry>'
-
-    c = post("apps-apis.google.com", "/a/feeds/group/2.0/cojourners.com/#{group_id}/user", atom)
+    
+    begin
+      c = post("apps-apis.google.com", "/a/feeds/group/2.0/cojourners.com/#{group_id}/user", atom)
+    rescue Exception => e
+      # Swallow this error. I dont' want to die on adding a default user
+    end
   end
   
   def self.update_group(group)
