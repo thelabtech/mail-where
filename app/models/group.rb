@@ -2,9 +2,11 @@ class Group < ActiveRecord::Base
   set_table_name 'mail_groups'
   belongs_to :user
   has_many :members, :dependent => :delete_all
+  has_many :query_members, :class_name => "Member", :foreign_key => "group_id", :conditions => 'mail_members.exception = 0'
   validates_presence_of :group_id, :group_name, :group_description
   validates_format_of :group_id, :with => /^[\w\.%\+\-]+$/i
   validates_uniqueness_of :group_id, :group_name, :on => :create, :message => "must be unique"
+  validate :query_has_results
   # validates_each :group_id do |record, attr, value|
   #   record.errors.add attr, 'cannot start with the word "test"' if value.to_s[0..3] == 'test'
   # end
@@ -13,6 +15,10 @@ class Group < ActiveRecord::Base
   after_create :update_members, :queue_user_and_shared_contact, :queue_update_google_members
   
   before_destroy :queue_delete_google_group
+  
+  def query_has_results
+    errors.add_to_base("No results we produced so the query will not be saved.") unless Group.connection.select_values(email_query).present?
+  end
   
   scope :daily_updates, where(:update_interval => 'Daily')
   scope :weekly_updates, where(:update_interval => 'Weekly')
@@ -64,7 +70,7 @@ class Group < ActiveRecord::Base
     unless @old_addresses
       return ['No query specified'] if email_query_was.blank?
       begin 
-        @old_addresses = Group.connection.select_values(email_query_was).map(&:downcase)
+        @old_addresses = self.query_members.collect(&:email)
       rescue
         @old_addresses = query_error
       end
@@ -96,7 +102,7 @@ class Group < ActiveRecord::Base
   def update_members
     if email_query.present? && addresses != query_error && (old_addresses != addresses)
       to_delete = old_addresses - addresses
-      Member.delete_all({:id => to_delete, :group_id => self.id}) if to_delete.present?
+      Member.delete_all({:email => to_delete, :group_id => self.id}) if to_delete.present?
       
       to_add = addresses - old_addresses
       to_add.each {|a| self.members.create(:email => a)}
