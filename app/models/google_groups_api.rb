@@ -44,12 +44,8 @@ class GoogleGroupsApi
   end
   
   def self.add_default_user(group_id)
-    atom = '<atom:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:apps="http://schemas.google.com/apps/2006" xmlns:gd="http://schemas.google.com/g/2005">'
-    atom += '<apps:property name="email" value="admin@cojourners.com"/>'
-    atom += '</atom:entry>'
-    
     begin
-      c = post("apps-apis.google.com", "/a/feeds/group/2.0/cojourners.com/#{group_id}/user", atom)
+      add_owner('admin@cojourners.com', group_id)
     rescue Exception => e
       # Swallow this error. I dont' want to die on adding a default user
     end
@@ -81,6 +77,19 @@ class GoogleGroupsApi
     rescue
       # Fail silently if we can't delete the group from google.
     end
+  end
+  
+  def self.delete_owner(email, group_id)
+    delete("apps-apis.google.com", "/a/feeds/group/2.0/cojourners.com/#{group_id}/owner/#{email}")
+  end
+  
+  def self.add_owner(email, group_id)
+    atom = '<atom:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:apps="http://schemas.google.com/apps/2006" xmlns:gd="http://schemas.google.com/g/2005">'
+    atom += "<apps:property name=\"email\" value=\"#{email}\"/>"
+    atom += '</atom:entry>'
+    
+    c = post("apps-apis.google.com", "/a/feeds/group/2.0/cojourners.com/#{group_id}/owner", atom)
+
   end
   
   def self.delete_member(member_id, group_id)
