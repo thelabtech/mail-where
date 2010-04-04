@@ -1,7 +1,7 @@
 <li id="<%= dom_id(owner) %>">
-  <%= link_to('delete', group_member_path(owner.group, owner), :method => :delete, 
+  <%= link_to('delete', group_owner_path(owner.group, owner), :method => :delete, 
               :remote => true, 
-              :confirm => 'Are you sure you want to remove this member?', 
+              :confirm => 'Are you sure you want to remove this owner?', 
               :before => "$('##{dom_id(owner)}').fadeOut()") %> 
   <%= owner.email %>
 </li>

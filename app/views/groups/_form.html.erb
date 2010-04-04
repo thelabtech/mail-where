@@ -40,10 +40,10 @@
   <% unless @group.new_record? %>
     <div class="field" id="extra_addresses_box">
       <h3>Group Owners:</h3>
-      <% form_for(@group.owners.new, :url => group_owners_path(@group), :remote => true, :before => "$('#owner_spinner').show()", :complete => "$('#owner_spinner').hide()") do |f| %>
+      <% form_for(@group.owners.new, :url => group_owners_path(@group), :remote => true, :before => "$('#spinner_owner').show()", :complete => "$('#owner_spinner').hide()") do |f| %>
         <%= f.text_field :email %>
         <%= f.submit "Add Owner" %>
-        <%= spinner %>
+        <%= spinner('owner') %>
       <% end %>
       <ul id="owner_addresses">
         <%= render :partial => 'owners/owner', :collection => @group.owners %>

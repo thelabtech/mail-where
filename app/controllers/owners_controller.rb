@@ -7,8 +7,14 @@ class OwnersController < ApplicationController
 
   def destroy
     @owner = @group.owners.find(params[:id])
-    @owner.destroy
-    render :nothing => true
+    # @owner.destroy
+    respond_to do |wants|
+      wants.js do
+        render :update do |page|
+          page << "$('##{dom_id(@owner)}').fadeOut()"
+        end
+      end
+    end
   end
   
   protected 
