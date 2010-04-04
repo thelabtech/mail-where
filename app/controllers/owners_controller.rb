@@ -7,7 +7,7 @@ class OwnersController < ApplicationController
 
   def destroy
     @owner = @group.owners.find(params[:id])
-    # @owner.destroy
+    @owner.destroy
     respond_to do |wants|
       wants.js do
         render :update do |page|
