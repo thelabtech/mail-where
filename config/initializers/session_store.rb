@@ -4,12 +4,9 @@
 # If you change this key, all old sessions will become invalid!
 # Make sure the secret is at least 30 characters and all random, 
 # no regular words or you'll be exposed to dictionary attacks.
-ActionController::Base.session = {
-  :key    => '_mail_where_session',
-  :secret => '13bcfb463dc3af0b23365ce82cfe24e69d49103f03e817d51f17d14b0dbbbe581cfdb60be6731d703a551a63ee1becc034cf74027c2156a109636c2590f6cbce'
-}
 
 # Use the database for sessions instead of the cookie-based default,
 # which shouldn't be used to store highly confidential information
 # (create the session table with "rake db:sessions:create")
-ActionController::Base.session_store = :mem_cache_store
+Rails.application.config.session_store :mem_cache_store, :key    => '_mail_where_session'
+Rails.application.config.secret_token = 'a9aa8b960b1186dd0bc248df109102992979645457f2517d3a7a08db8fc7cd78fe16fec2d33badf73221124441ae38b8118de43496a67b607408deff3bb181d7'

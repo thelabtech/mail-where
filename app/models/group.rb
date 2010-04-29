@@ -17,7 +17,13 @@ class Group < ActiveRecord::Base
   before_destroy :queue_delete_google_group
   
   def query_has_results
-    errors.add_to_base("No results we produced so the query will not be saved.") unless email_query.present? && Group.connection.select_values(email_query).present?
+    if email_query.present? 
+      begin
+        errors.add_to_base("No results we produced so the query will not be saved.") unless Group.connection.select_values(email_query).present?
+      rescue
+        errors.add_to_base("No results we produced so the query will not be saved.") 
+      end
+    end
   end
   
   scope :daily_updates, where(:update_interval => 'Daily')
