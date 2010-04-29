@@ -1,0 +1,7 @@
+if @owner.new_record?
+  page << "alert('#{escape_javascript(@owner.errors.full_messages.join("\n"))}');"
+else
+  page << "$('#owner_addresses').prepend('#{escape_javascript(render 'owner', :owner => @owner)}');"
+  page << "$('#owner_email').val('');"
+end
+page << "$('#owner_spinner').hide();"

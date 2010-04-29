@@ -2,6 +2,7 @@ class Group < ActiveRecord::Base
   set_table_name 'mail_groups'
   belongs_to :user
   has_many :members, :dependent => :delete_all
+  has_many :owners, :dependent => :delete_all
   has_many :query_members, :class_name => "Member", :foreign_key => "group_id", :conditions => 'mail_members.exception = 0'
   validates_presence_of :group_id, :group_name, :group_description
   validates_format_of :group_id, :with => /^[\w\.%\+\-]+$/i

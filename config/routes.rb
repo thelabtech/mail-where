@@ -4,6 +4,7 @@ EmailLists::Application.routes.draw do |map|
       post :refresh
     end
     resources :members
+    resources :owners
   end
   
   match 'denied' => 'groups#denied', :as => :denied

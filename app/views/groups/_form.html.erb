@@ -20,7 +20,7 @@
   </div>
   <div class="field">
     <%= f.label :email_permission, "Who can send emails?" %>
-    <%= f.select :email_permission, [['Members of this group','Member'],['People with @cojouners.com addresses','Domain']] %>
+    <%= f.select :email_permission, [['Owners of this group','Owner'], ['Members of this group','Member'],['People with @cojouners.com addresses','Domain']] %>
   </div>
   <div class="field">
     <%= f.label :update_interval, "How often should this list update?" %>
@@ -39,6 +39,16 @@
 
   <% unless @group.new_record? %>
     <div class="field" id="extra_addresses_box">
+      <h3>Group Owners:</h3>
+      <% form_for(@group.owners.new, :url => group_owners_path(@group), :remote => true, :before => "$('#spinner_owner').show()", :complete => "$('#owner_spinner').hide()") do |f| %>
+        <%= f.text_field :email %>
+        <%= f.submit "Add Owner" %>
+        <%= spinner('owner') %>
+      <% end %>
+      <ul id="owner_addresses">
+        <%= render :partial => 'owners/owner', :collection => @group.owners %>
+      </ul>
+      <br />
       <h3>Extra Addresses Not In Query:</h3>
       <% form_for(@group.members.new, :url => group_members_path(@group), :remote => true, :before => "$('#spinner').show()", :complete => "$('#spinner').hide()") do |f| %>
         <%= f.text_field :email %>
