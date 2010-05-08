@@ -7,7 +7,7 @@ class Group < ActiveRecord::Base
   validates_presence_of :group_id, :group_name, :group_description
   validates_format_of :group_id, :with => /^[\w\.%\+\-]+$/i
   validates_uniqueness_of :group_id, :group_name, :on => :create, :message => "must be unique"
-  validate :query_has_results
+  # validate :query_has_results
   # validates_each :group_id do |record, attr, value|
   #   record.errors.add attr, 'cannot start with the word "test"' if value.to_s[0..3] == 'test'
   # end

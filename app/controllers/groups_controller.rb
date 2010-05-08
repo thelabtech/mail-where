@@ -14,6 +14,7 @@ class GroupsController < ApplicationController
   # GET /groups/1
   # GET /groups/1.xml
   def show
+    flash[:error] = "This query returns no results."  unless Group.connection.select_values(@group.email_query).present?
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @group }
