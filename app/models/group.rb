@@ -7,7 +7,7 @@ class Group < ActiveRecord::Base
   validates_presence_of :group_id, :group_name, :group_description
   validates_format_of :group_id, :with => /^[\w\.%\+\-]+$/i
   validates_uniqueness_of :group_id, :group_name, :on => :create, :message => "must be unique"
-  # validate :query_has_results
+  validate :query_valid_sql
   # validates_each :group_id do |record, attr, value|
   #   record.errors.add attr, 'cannot start with the word "test"' if value.to_s[0..3] == 'test'
   # end
@@ -17,12 +17,12 @@ class Group < ActiveRecord::Base
   
   before_destroy :queue_delete_google_group
   
-  def query_has_results
+  def query_valid_sql
     if email_query.present? 
       begin
-        errors.add_to_base("No results we produced so the query will not be saved.") unless Group.connection.select_values(email_query).present?
-      rescue
-        errors.add_to_base("No results we produced so the query will not be saved.") 
+        Group.connection.select_values(email_query).present?
+      rescue ActiveRecord::StatementInvalid
+        errors.add_to_base("There is an SQL error in your query.") 
       end
     end
   end
