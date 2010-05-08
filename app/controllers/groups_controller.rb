@@ -1,5 +1,6 @@
 class GroupsController < ApplicationController
   before_filter :find_group, :only => [:show, :edit, :update, :refresh]
+  before_filter :find_group_safely, :only => [:edit, :destroy]
   # GET /groups
   # GET /groups.xml
   def index
@@ -43,6 +44,7 @@ class GroupsController < ApplicationController
 
   # GET /groups/1/edit
   def edit
+    @group = current_user.admin? ? Group.find(params[:id]) : current_user.groups.find(params[:id])
   end
 
   # POST /groups
@@ -83,7 +85,6 @@ class GroupsController < ApplicationController
   # DELETE /groups/1
   # DELETE /groups/1.xml
   def destroy
-    @group = current_user.admin? ? Group.find(params[:id]) : current_user.groups.find(params[:id])
     @group.destroy
 
     respond_to do |format|
@@ -100,5 +101,9 @@ class GroupsController < ApplicationController
   protected
     def find_group
       @group = Group.find(params[:id])
+    end
+    
+    def find_group_safely
+      @group = current_user.admin? ? Group.find(params[:id]) : current_user.groups.find(params[:id])
     end
 end
