@@ -18,6 +18,18 @@
   <%= @group.email_permission %>
 </p>
 
+<% if @group.owners.present? %>
+<p>
+  <% @emails = @group.owners.collect(&:email) %>
+  <b>Group Owners:</b> 
+  <ul>
+    <% @emails.each do |email| %>
+      <li><%= email %></li>
+    <% end %>
+  </ul>
+</p>
+<% end %>
+
 <p>
   <% @emails = @group.all_addresses %>
   <% if @emails.length > 200 %>
