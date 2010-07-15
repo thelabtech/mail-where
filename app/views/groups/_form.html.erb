@@ -40,20 +40,20 @@
   <% unless @group.new_record? %>
     <div class="field" id="extra_addresses_box">
       <h3>Group Owners (owners can edit and delete this group):</h3>
-      <% form_for(@group.owners.new, :url => group_owners_path(@group), :remote => true, :before => "$('#spinner_owner').show()", :complete => "$('#owner_spinner').hide()") do |f| %>
+      <% form_for(@group.owners.new, :url => group_owners_path(@group), :remote => true) do |f| %>
         <%= f.text_field :email %>
         <%= f.submit "Add Owner" %>
-        <%= spinner('owner') %>
+        <%= image_tag('/images/spinner.gif', :id => 'owner_spinner', :style => 'display:none') %>
       <% end %>
       <ul id="owner_addresses">
         <%= render :partial => 'owners/owner', :collection => @group.owners %>
       </ul>
       <br />
       <h3>Extra Addresses Not In Query:</h3>
-      <% form_for(@group.members.new, :url => group_members_path(@group), :remote => true, :before => "$('#spinner').show()", :complete => "$('#spinner').hide()") do |f| %>
+      <% form_for(@group.members.new, :url => group_members_path(@group), :remote => true) do |f| %>
         <%= f.text_field :email %>
         <%= f.submit "Add Member" %>
-        <%= spinner %>
+        <%= image_tag('/images/spinner.gif', :id => 'member_spinner', :style => 'display:none;')  %>
       <% end %>
       <ul id="extra_addresses">
         <%= render :partial => 'members/exception', :collection => @group.members.exceptions %>

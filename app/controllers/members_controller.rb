@@ -1,11 +1,15 @@
 class MembersController < ApplicationController
+  before_filter :find_group
+  
   def create
-    find_group
-    @member = @group.members.create(params[:member].merge({:exception => true}))
+    old_addresses = @group.members.all
+    for email in params[:member][:email].split(/,|;/)
+      @group.members.create(:email => email.gsub(/ /,''), :exception => true)
+    end
+    @new_members = @group.members - old_addresses
   end
 
   def destroy
-    find_group
     @member = @group.members.find(params[:id])
     @member.destroy
     render :nothing => true

@@ -1,7 +1,9 @@
-if @member.new_record?
-  page << "alert('#{escape_javascript(@member.errors.full_messages.join("\n"))}');"
-else
-  page << "$('#extra_addresses').prepend('#{escape_javascript(render 'exception', :exception => @member)}');"
-  page << "$('#member_email').val('');"
+for member in @new_members
+  if member.new_record?
+    page << "alert('#{escape_javascript(member.errors.full_messages.join("\n"))}');"
+  else
+    page << "$('#extra_addresses').prepend('#{escape_javascript( render 'exception', :exception => member)}');"
+    page << "$('#member_email').val('');"
+  end
 end
-page << "$('#spinner').hide();"
+page << "$('#member_spinner').hide();"

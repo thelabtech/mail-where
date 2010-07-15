@@ -2,9 +2,13 @@ class OwnersController < ApplicationController
   before_filter :find_group
   
   def create
-    @owner = @group.owners.create(params[:owner])
+    old_addresses = @group.owners.all
+    for email in params[:owner][:email].split(/,|;/)
+      @group.owners.create(:email => email.gsub(/ /,''), :exception => true)
+    end
+    @new_owners = @group.owners - old_addresses
   end
-
+  
   def destroy
     @owner = @group.owners.find(params[:id])
     @owner.destroy
