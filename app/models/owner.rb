@@ -9,6 +9,8 @@ class Owner < ActiveRecord::Base
   after_save :add_to_google
   before_destroy :remove_from_google
   
+  scope :exceptions, where(:exception => true)
+    
   def add_to_google
     GoogleGroupsApi.send_later(:add_owner, email, group.group_id) 
   end

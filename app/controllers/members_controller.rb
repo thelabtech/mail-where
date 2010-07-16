@@ -12,7 +12,13 @@ class MembersController < ApplicationController
   def destroy
     @member = @group.members.find(params[:id])
     @member.destroy
-    render :nothing => true
+    respond_to do |wants|
+      wants.js do
+        render :update do |page|
+          page << "$('##{dom_id(@member)}').fadeOut()"
+        end
+      end
+    end
   end
   
   protected 

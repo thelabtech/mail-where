@@ -20,11 +20,15 @@
   </div>
   <div class="field">
     <%= f.label :email_permission, "Who can send emails?" %>
-    <%= f.select :email_permission, [['Owners of this group','Owner'], ['Members of this group','Member'],['People with @cojouners.com addresses','Domain']] %>
+    <%= f.select :email_permission, [['Owners of this group','Owner'], ['Members of this group','Member'],['People with @cojourners.com addresses','Domain']] %>
   </div>
   <div class="field">
     <%= f.label :update_interval, "How often should this list update?" %>
     <%= f.select :update_interval, ['Daily','Weekly'] %>
+  </div>
+  <div class="field">
+    <%= f.label :owners_email_query %>
+    <%= f.text_area :owners_email_query, :rows => 5 %>
   </div>
   <div class="field">
     <%= f.label :email_query %>
@@ -41,17 +45,17 @@
     <div class="field" id="extra_addresses_box">
       <h3>Group Owners (owners can edit and delete this group):</h3>
       <% form_for(@group.owners.new, :url => group_owners_path(@group), :remote => true) do |f| %>
-        <%= f.text_field :email %>
+        <%= f.text_field :email, :title =>"Separate multiple addresses with a \',\' or \';\'" %>
         <%= f.submit "Add Owner" %>
         <%= image_tag('/images/spinner.gif', :id => 'owner_spinner', :style => 'display:none') %>
       <% end %>
       <ul id="owner_addresses">
-        <%= render :partial => 'owners/owner', :collection => @group.owners %>
+        <%= render :partial => 'owners/owner', :collection => @group.owners.exceptions %>
       </ul>
       <br />
       <h3>Extra Addresses Not In Query:</h3>
       <% form_for(@group.members.new, :url => group_members_path(@group), :remote => true) do |f| %>
-        <%= f.text_field :email %>
+        <%= f.text_field :email, :title => "Separate multiple addresses with a \',\' or \';\'" %>
         <%= f.submit "Add Member" %>
         <%= image_tag('/images/spinner.gif', :id => 'member_spinner', :style => 'display:none;')  %>
       <% end %>

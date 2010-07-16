@@ -21,7 +21,12 @@
 <% if @group.owners.present? %>
 <p>
   <% @emails = @group.owners.collect(&:email) %>
-  <b>Group Owners:</b> 
+ <% if @emails.length > 200 %>
+    <b>Owners List (showing top 20 of <%= number_with_delimiter(@emails.length) %> total):</b>
+    <% @emails = @emails[0..19] %>
+  <% else %>
+    <b>Owners List:</b> 
+  <% end %>
   <ul>
     <% @emails.each do |email| %>
       <li><%= email %></li>
@@ -30,9 +35,10 @@
 </p>
 <% end %>
 
+<% if @group.members.present? %>
 <p>
-  <% @emails = @group.all_addresses %>
-  <% if @emails.length > 200 %>
+  <% @emails = @group.members.collect(&:email) %>
+ <% if @emails.length > 200 %>
     <b>Email List (showing top 20 of <%= number_with_delimiter(@emails.length) %> total):</b>
     <% @emails = @emails[0..19] %>
   <% else %>
@@ -44,6 +50,7 @@
     <% end %>
   </ul>
 </p>
+<% end %>
 <%= button_to 'Update This List', refresh_group_path(@group) %>
 <br/>
 

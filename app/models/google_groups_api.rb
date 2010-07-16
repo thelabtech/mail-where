@@ -32,6 +32,21 @@ class GoogleGroupsApi
     end
   end
   
+  def self.owners(group)
+    owners = []
+    begin
+      response = get('apps-apis.google.com', "/a/feeds/group/2.0/cojourners.com/#{group.group_id}/owner")
+      feed = Atom::Feed.new(response)
+      feed.entries.each do |entry|
+        owners << entry.extended_elements.detect {|ee| ee.attributes['name'] == 'ownerID'}.attributes['value']
+      end
+      owners
+    rescue EntityDoesNotExist
+      create_group(group)
+      retry
+    end
+  end
+  
   def self.create_group(group)
     atom = '<atom:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:apps="http://schemas.google.com/apps/2006" xmlns:gd="http://schemas.google.com/g/2005">'
     atom += "<apps:property name=\"groupId\" value=\"#{group.group_id}\"></apps:property>"
