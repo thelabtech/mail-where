@@ -45,9 +45,9 @@
     <div class="field" id="extra_addresses_box">
       <h3>Group Owners (owners can edit and delete this group):</h3>
       <% form_for(@group.owners.new, :url => group_owners_path(@group), :remote => true) do |f| %>
-        <%= f.text_field :email, :title =>"Separate multiple addresses with a \',\' or \';\'" %>
+        <%= f.text_field :email, :title =>"Separate multiple addresses with a ',' or ';'" %>
         <%= f.submit "Add Owner" %>
-        <%= image_tag('/images/spinner.gif', :id => 'owner_spinner', :style => 'display:none') %>
+        <%= spinner('owner') %>
       <% end %>
       <ul id="owner_addresses">
         <%= render :partial => 'owners/owner', :collection => @group.owners.exceptions %>
@@ -55,9 +55,9 @@
       <br />
       <h3>Extra Addresses Not In Query:</h3>
       <% form_for(@group.members.new, :url => group_members_path(@group), :remote => true) do |f| %>
-        <%= f.text_field :email, :title => "Separate multiple addresses with a \',\' or \';\'" %>
+        <%= f.text_field :email, :title => "Separate multiple addresses with a ',' or ';'" %>
         <%= f.submit "Add Member" %>
-        <%= image_tag('/images/spinner.gif', :id => 'member_spinner', :style => 'display:none;')  %>
+        <%= spinner('member')  %>
       <% end %>
       <ul id="extra_addresses">
         <%= render :partial => 'members/exception', :collection => @group.members.exceptions %>

@@ -11,6 +11,11 @@ module ApplicationHelper
     content_tag(:li, content, :class => current_class)
   end
   
+  def spinner(extra = nil)
+    e = extra ? "spinner_#{extra}" : 'spinner'
+    image_tag('spinner.gif', :id => e, :style => 'display:none', :class => 'spinner')
+  end
+  
   def reports_for_page
     render :partial => 'layouts/reports', :locals => { :reports => flash }
   end  

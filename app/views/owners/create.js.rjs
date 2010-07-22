@@ -6,4 +6,4 @@ for owner in @new_owners
     page << "$('#owner_email').val('');"
   end
 end
-page << "$('#owner_spinner').hide();"
+page << "$('#spinner_owner').hide();"

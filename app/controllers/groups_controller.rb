@@ -16,14 +16,14 @@ class GroupsController < ApplicationController
   # GET /groups/1.xml
   def show
     begin
-      if !@group.email_query.blank?
+      if @group.email_query.present?
         flash[:error] = "Your members email query returns no results."  unless Group.connection.select_values(@group.email_query).present?
       end
     rescue ActiveRecord::StatementInvalid
       flash[:error] = "There is an SQL error in your members email query."
     end
     begin
-      if !@group.owners_email_query.blank? 
+      if @group.owners_email_query.present? 
     	 flash[:error] = "Your owners email query returns no results." unless Group.connection.select_values(@group.owners_email_query).present? 
       end
     rescue ActiveRecord::StatementInvalid

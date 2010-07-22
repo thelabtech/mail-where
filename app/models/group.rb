@@ -56,15 +56,17 @@ class Group < ActiveRecord::Base
   end
   
   def self.update_daily_groups
-    Group.daily_updates.each {|g| 
-    g.update_google_members
-    g.update_google_owners}
+    Group.daily_updates.each do |g| 
+      g.update_google_members
+      g.update_google_owners
+    end
   end
   
   def self.update_weekly_groups
-    Group.weekly_updates.each {|g| 
-    g.update_google_members
-    g.update_google_owners}
+    Group.weekly_updates.each do |g| 
+      g.update_google_members
+      g.update_google_owners
+    end
   end
   
   def members_from_google

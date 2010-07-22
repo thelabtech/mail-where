@@ -6,4 +6,4 @@ for member in @new_members
     page << "$('#member_email').val('');"
   end
 end
-page << "$('#member_spinner').hide();"
+page << "$('#spinner_member').hide();"
