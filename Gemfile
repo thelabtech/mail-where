@@ -2,7 +2,7 @@
 source 'http://gemcutter.org'
 
 
-gem "rails", "3.0.0.beta3"
+gem "rails", "3.0.0.rc"
 
 ## Bundle edge rails:
 # gem "rails", :git => "git://github.com/rails/rails.git"
@@ -12,7 +12,8 @@ gem "rails", "3.0.0.beta3"
 gem "mysql"
 gem 'nokogiri'
 gem 'atom'
-gem 'will_paginate', '~> 3.0.pre'
+gem 'will_paginate', '~> 3.0.pre2'
+gem 'memcache-client'
 ## Bundle the gems you use:
 # gem "bj"
 # gem "hpricot", "0.6"

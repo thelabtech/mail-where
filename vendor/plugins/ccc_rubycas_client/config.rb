@@ -1,9 +1,9 @@
 # enable detailed CAS logging
-cas_logger = CASClient::Logger.new(Rails.root.join('log', 'cas.log'))
+cas_logger = CASClient::Logger.new(RAILS_ROOT+'/log/cas.log')
 cas_logger.level = Logger::DEBUG
 
 CASClient::Frameworks::Rails::Filter.configure(
-  :cas_base_url  => "https://signin.ccci.org/cas/",
+  :cas_base_url  => "https://signin.mygcx.org/cas/",
   :username_session_key => :cas_user,
   :extra_attributes_session_key => :cas_extra_attributes,
   :proxy_retrieval_url => "https://www.globalshortfilmnetwork.com/cas_proxy_callback/retrieve_pgt",

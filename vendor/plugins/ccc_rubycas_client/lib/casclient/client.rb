@@ -11,6 +11,8 @@ module CASClient
     end
     
     def configure(conf)
+      #TODO: raise error if conf contains unrecognized cas options (this would help detect user typos in the config)
+
       raise ArgumentError, "Missing :cas_base_url parameter!" unless conf[:cas_base_url]
       
       @cas_base_url      = conf[:cas_base_url].gsub(/\/$/, '')       
@@ -20,6 +22,7 @@ module CASClient
       @validate_url = conf[:validate_url]
       @proxy_url    = conf[:proxy_url]
       @service_url  = conf[:service_url]
+      @force_ssl_verification  = conf[:force_ssl_verification]
       @proxy_callback_url  = conf[:proxy_callback_url]
       @proxy_retrieval_url = conf[:proxy_retrieval_url]
       
@@ -66,7 +69,7 @@ module CASClient
       if destination_url || follow_url
         uri = URI.parse(url)
         h = uri.query ? query_to_hash(uri.query) : {}
-        h['service'] = destination_url if destination_url
+        h['destination'] = destination_url if destination_url
         h['url'] = follow_url if follow_url
         uri.query = hash_to_query(h)
         uri.to_s
@@ -103,6 +106,7 @@ module CASClient
       
       https = Net::HTTP.new(uri.host, uri.port)
       https.use_ssl = (uri.scheme == 'https')
+      https.verify_mode = (@force_ssl_verification ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE)
       
       begin
         raw_res = https.start do |conn|
@@ -141,6 +145,7 @@ module CASClient
       uri = URI.parse(login_url+'Ticket')
       https = Net::HTTP.new(uri.host, uri.port)
       https.use_ssl = (uri.scheme == 'https')
+      https.verify_mode = (@force_ssl_verification ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE)
       res = https.post(uri.path, ';')
       
       raise CASException, res.body unless res.kind_of? Net::HTTPSuccess
@@ -182,16 +187,16 @@ module CASClient
       uri = URI.parse(uri) unless uri.kind_of? URI
       https = Net::HTTP.new(uri.host, uri.port)
       https.use_ssl = (uri.scheme == 'https')
+      https.verify_mode = (@force_ssl_verification ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE)
+      
       res = https.start do |conn|
         conn.get("#{uri.path}?#{uri.query}")
       end
       
-      unless res.kind_of? Net::HTTPSuccess
-        log.debug(res.body)
-        nil
-      else
-        ProxyGrantingTicket.new(res.body.strip, pgt_iou)
-      end
+      
+      raise CASException, res.body unless res.kind_of? Net::HTTPSuccess
+      
+      ProxyGrantingTicket.new(res.body.strip, pgt_iou)
     end
     
     def add_service_to_login_url(service_url)
@@ -209,6 +214,7 @@ module CASClient
       uri = URI.parse(uri) unless uri.kind_of? URI
       https = Net::HTTP.new(uri.host, uri.port)
       https.use_ssl = (uri.scheme == 'https')
+      https.verify_mode = (@force_ssl_verification ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE)
       
       begin
         raw_res = https.start do |conn|
@@ -239,6 +245,7 @@ module CASClient
       req.set_form_data(data, ';')
       https = Net::HTTP.new(uri.host, uri.port)
       https.use_ssl = (uri.scheme == 'https')
+      https.verify_mode = (@force_ssl_verification ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE)
       https.start {|conn| conn.request(req) }
     end
     

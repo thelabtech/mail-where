@@ -74,7 +74,11 @@ module CASClient
         end
         # unserialize extra attributes
         @extra_attributes.each do |k, v|
-          @extra_attributes[k] = YAML.load(v)
+          if v.blank?
+            @extra_attributes[k] = nil
+          else
+            @extra_attributes[k] = YAML.load(v)
+          end
         end
       elsif is_failure?
         @failure_code = @xml.elements['//cas:authenticationFailure'].attributes['code']
@@ -87,11 +91,11 @@ module CASClient
     end
     
     def is_success?
-      @valid == true || (protocol > 1.0 && xml.name == "authenticationSuccess")
+      (instance_variable_defined?(:@valid) &&  @valid) || (protocol > 1.0 && xml.name == "authenticationSuccess")
     end
     
     def is_failure?
-      @valid == false || (protocol > 1.0 && xml.name == "authenticationFailure" )
+      (instance_variable_defined?(:@valid) && !@valid) || (protocol > 1.0 && xml.name == "authenticationFailure" )
     end
   end
   
@@ -159,7 +163,9 @@ module CASClient
         @ticket = $~[1]
       end
       
-      if !http_response.kind_of?(Net::HTTPSuccess) || ticket.blank?
+      if (http_response.kind_of?(Net::HTTPSuccess) || http_response.kind_of?(Net::HTTPFound)) && @ticket.present?
+        log.info("Login was successful for ticket: #{@ticket.inspect}.")
+      else
         @failure = true
         # Try to extract the error message -- this only works with RubyCAS-Server.
         # For other servers we just return the entire response body (i.e. the whole error page).
