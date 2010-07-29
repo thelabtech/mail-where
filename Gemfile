@@ -10,7 +10,7 @@ gem "rails", "3.0.0.rc"
 # ActiveRecord requires a database adapter. By default,
 # Rails has selected sqlite3.
 gem "mysql"
-gem 'nokogiri'
+gem 'nokogiri', "1.4.1"
 gem 'atom'
 gem 'will_paginate', '~> 3.0.pre2'
 gem 'memcache-client'
