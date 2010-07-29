@@ -589,3 +589,10 @@ div.sidebar {
 
 h4 span.sub {
   font-weight: normal; }
+
+.footer {
+	border-top: 1px solid black;
+	padding:10px;
+  font-size: 12px;
+  line-height: 15px;
+  overflow: hidden; }
