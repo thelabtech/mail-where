@@ -13,7 +13,7 @@ require 'hoptoad_notifier/capistrano'
 
 set :application, "mail-where"
 # set :repository, "http://svn.uscm.org/#{application}/trunk"
-set :repository,  "git@git.uscm.org:sp2.git"
+set :repository,  "git@git.uscm.org:mail-where.git"
 # set :checkout, 'co'
 set :keep_releases, '3'
 
@@ -29,9 +29,9 @@ set :keep_releases, '3'
 # set :target, ENV['target'] || ENV['TARGET'] || 'dev'
 default_run_options[:pty] = true
 set :scm, "git"
-role :db, "hart-w040.uscm.org", :primary => true
-role :web, "hart-w040.uscm.org"
-role :app, "hart-w040.uscm.org"
+role :db, "hart-w025.uscm.org", :primary => true
+role :web, "hart-w025.uscm.org"
+role :app, "hart-w025.uscm.org"
 
 set :user, 'deploy'
 set :password, 'alt60m'

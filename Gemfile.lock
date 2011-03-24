@@ -1,3 +1,9 @@
+GIT
+  remote: git://github.com/twinge/atom.git
+  revision: b94dc9364af565ce20ad27bde1d69e505e1a09de
+  specs:
+    atom (0.3.1)
+
 GEM
   remote: http://gemcutter.org/
   specs:
@@ -29,7 +35,6 @@ GEM
       activesupport (= 3.0.5)
     activesupport (3.0.5)
     arel (2.0.9)
-    atom (0.3)
     builder (2.1.2)
     erubis (2.6.6)
       abstract (>= 1.0.0)
@@ -41,7 +46,7 @@ GEM
       treetop (~> 1.4.8)
     memcache-client (1.8.5)
     mime-types (1.16)
-    mysql (2.8.1)
+    mysql2 (0.2.6)
     nokogiri (1.4.1)
     polyglot (0.3.1)
     rack (1.2.2)
@@ -73,9 +78,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  atom
+  atom!
   memcache-client
-  mysql
+  mysql2
   nokogiri (= 1.4.1)
   rails (= 3.0.5)
   will_paginate (~> 3.0.pre2)
