@@ -1,8 +1,8 @@
 GIT
-  remote: git://github.com/twinge/atom.git
-  revision: b94dc9364af565ce20ad27bde1d69e505e1a09de
+  remote: https://github.com/thoughtafter/simple-rss.git
+  revision: d5790dc63991d6d8fc91040604eae31c5c461117
   specs:
-    atom (0.3.1)
+    simple-rss (1.2.3)
 
 GEM
   remote: http://gemcutter.org/
@@ -78,9 +78,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  atom!
   memcache-client
   mysql2
   nokogiri (= 1.4.1)
   rails (= 3.0.5)
+  simple-rss!
   will_paginate (~> 3.0.pre2)

@@ -1,0 +1,1 @@
+SimpleRSS.item_tags << :'apps:property';

@@ -1,5 +1,6 @@
 require 'net/http'
 require 'uri'
+require 'open-uri'
 
 class EntityDoesNotExist < StandardError; end
 class DuplicateContact < StandardError; end
@@ -13,7 +14,7 @@ class GoogleGroupsApi
   
   def self.groups
     response = get('apps-apis.google.com', '/a/feeds/group/2.0/cojourners.com')
-    feed = Atom::Feed.new(response)
+    feed = SimpleRSS.parse(response)
     feed.entries.collect {|e| GoogleGroup.new(e)}
   end
   
@@ -21,7 +22,8 @@ class GoogleGroupsApi
     members = []
     begin
       response = get('apps-apis.google.com', "/a/feeds/group/2.0/cojourners.com/#{group.group_id}/member")
-      feed = Atom::Feed.new(response)
+      feed = SimpleRSS.parse(response)
+      raise feed.entries.inspect
       feed.entries.each do |entry|
         members << entry.extended_elements.detect {|ee| ee.attributes['name'] == 'memberId'}.attributes['value']
       end
@@ -36,7 +38,8 @@ class GoogleGroupsApi
     owners = []
     begin
       response = get('apps-apis.google.com', "/a/feeds/group/2.0/cojourners.com/#{group.group_id}/owner")
-      feed = Atom::Feed.new(response)
+      feed = SimpleRSS.parse(response)
+      raise feed.entries.first.inspect
       feed.entries.each do |entry|
         owners << entry.extended_elements.detect {|ee| ee.attributes['name'] == 'ownerID'}.attributes['value']
       end
@@ -130,9 +133,9 @@ class GoogleGroupsApi
           </atom:entry>"
     begin
       response = post("www.google.com", "/m8/feeds/contacts/cojourners.com/full", atom, true, true)
-      feed = Atom::Feed.new(response)
+      feed = SimpleRSS.parse(response)
     rescue DuplicateContact => body
-      feed = Atom::Feed.new(body.message)
+      feed = SimpleRSS.parse(body.message)
     end
     group.update_attribute(:contact_id, feed.id)
   end
@@ -141,7 +144,7 @@ class GoogleGroupsApi
     uri = URI.parse(contact_id)
     # Get edit url from existing contact
     response = get(uri.host, uri.path, nil, true, true)
-    feed = Atom::Feed.new(response)
+    feed = SimpleRSS.parse(response)
     edit_link = feed.links.detect {|l| l.rel == 'edit'}.href
     
     # delete contact
@@ -191,7 +194,7 @@ class GoogleGroupsApi
             when 'EntityExists'
               raise EntityExists, error
             when 'EntityDoesNotExist'
-              raise EntityDoesNotExist, error
+              # raise EntityDoesNotExist, error
             else
               raise standard_error(response)
             end

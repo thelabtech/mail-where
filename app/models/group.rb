@@ -83,11 +83,11 @@ class Group < ActiveRecord::Base
   
   def member_addresses
     unless @member_addresses
-      return ['No member query specified'] if email_query.blank?
+      return [] if email_query.blank?
       begin 
         @member_addresses = Group.connection.select_values(email_query).map(&:downcase)
       rescue
-        @member_addresses = query_error
+        @member_addresses = []
       end
     end
     @member_addresses
@@ -95,7 +95,7 @@ class Group < ActiveRecord::Base
   
   def owner_addresses
     unless @owner_addresses
-      return ['No owner query specified'] if owners_email_query.blank?
+      return [] if owners_email_query.blank?
       begin 
         @owner_addresses = Group.connection.select_values(owners_email_query).map(&:downcase)
       rescue
@@ -108,7 +108,7 @@ class Group < ActiveRecord::Base
   def old_member_addresses
     return [] if email_query == email_query_was
     unless @old_member_addresses
-      return ['No member query specified'] if email_query_was.blank?
+      return [] if email_query_was.blank?
       begin 
         @old_member_addresses = self.query_members.collect(&:email)
       rescue
@@ -121,7 +121,7 @@ class Group < ActiveRecord::Base
   def old_owner_addresses
     return [] if owners_email_query == owners_email_query_was
     unless @old_owner_addresses
-      return ['No owner query specified'] if owners_email_query_was.blank?
+      return [] if owners_email_query_was.blank?
       begin 
         @old_owner_addresses = self.query_owners.collect(&:email)
       rescue
@@ -130,7 +130,6 @@ class Group < ActiveRecord::Base
     end
     @old_owner_addresses
   end
-  
   
   def create_google_group
     begin
@@ -155,37 +154,39 @@ class Group < ActiveRecord::Base
   end
   
   def update_members
-      to_delete = old_member_addresses - member_addresses
-      Member.delete_all({:email => to_delete, :group_id => self.id}) if to_delete.present?
-      
-      to_add = member_addresses - old_member_addresses
-      to_add.each {|a| self.members.create(:email => a)}
+    to_delete = old_member_addresses - member_addresses
+    Member.delete_all({:email => to_delete, :group_id => self.id}) if to_delete.present?
+    
+    to_add = member_addresses - old_member_addresses
+    to_add.each {|a| self.members.create(:email => a)}
   end
   
    def update_owners
-      to_delete = old_owner_addresses - owner_addresses
-      Owner.delete_all({:email => to_delete, :group_id => self.id}) if to_delete.present?
-      
-      to_add = owner_addresses - old_owner_addresses
-      to_add.each {|a| self.owners.create(:email => a)}
+    to_delete = old_owner_addresses - owner_addresses
+    Owner.delete_all({:email => to_delete, :group_id => self.id}) if to_delete.present?
+    
+    to_add = owner_addresses - old_owner_addresses
+    to_add.each {|a| self.owners.create(:email => a)}
   end
   
   def update_google_members
-    to_delete = members_from_google - member_addresses
+    addresses = members.collect(&:email)
+    to_delete = members_from_google - addresses
     logger.debug(to_delete.inspect)
     to_delete.map {|m| GoogleGroupsApi.delete_member(m, group_id)}
   
-    to_add = member_addresses - members_from_google
+    to_add = addresses - members_from_google
     logger.debug(to_add.inspect)
     to_add.map {|m| GoogleGroupsApi.add_member(m, group_id)}
   end
   
   def update_google_owners
-    to_delete = owners_from_google - owner_addresses
+    addresses = owners.collect(&:email)
+    to_delete = owners_from_google - addresses
     logger.debug(to_delete.inspect)
     to_delete.map {|m| GoogleGroupsApi.delete_owner(m, group_id)}
   
-    to_add = owner_addresses - owners_from_google
+    to_add = addresses - owners_from_google
     logger.debug(to_add.inspect)
     to_add.map {|m| GoogleGroupsApi.add_owner(m, group_id)}
   end
@@ -203,7 +204,7 @@ class Group < ActiveRecord::Base
   
   protected
     def query_error
-      ['There was an error running your query']
+      []
     end
     
     def queue_user_and_shared_contact
