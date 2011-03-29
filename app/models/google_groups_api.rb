@@ -14,18 +14,17 @@ class GoogleGroupsApi
   
   def self.groups
     response = get('apps-apis.google.com', '/a/feeds/group/2.0/cojourners.com')
-    feed = SimpleRSS.parse(response)
-    feed.entries.collect {|e| GoogleGroup.new(e)}
+    feed = Hpricot(response)
+    (feed/'//entry').collect {|e| GoogleGroup.new(e)}
   end
   
   def self.members(group)
     members = []
     begin
       response = get('apps-apis.google.com', "/a/feeds/group/2.0/cojourners.com/#{group.group_id}/member")
-      feed = SimpleRSS.parse(response)
-      raise feed.entries.inspect
-      feed.entries.each do |entry|
-        members << entry.extended_elements.detect {|ee| ee.attributes['name'] == 'memberId'}.attributes['value']
+      feed = Hpricot(response)
+      (feed/'//entry').each do |entry|
+        members << (entry/'[@name="memberId"]').attr('value')
       end
       members
     rescue EntityDoesNotExist
@@ -38,10 +37,9 @@ class GoogleGroupsApi
     owners = []
     begin
       response = get('apps-apis.google.com', "/a/feeds/group/2.0/cojourners.com/#{group.group_id}/owner")
-      feed = SimpleRSS.parse(response)
-      raise feed.entries.first.inspect
-      feed.entries.each do |entry|
-        owners << entry.extended_elements.detect {|ee| ee.attributes['name'] == 'ownerID'}.attributes['value']
+      feed = Hpricot(response)
+      (feed/'//entry').each do |entry|
+        owners << (entry/'[@name="email"]').attr('value')
       end
       owners
     rescue EntityDoesNotExist
@@ -105,9 +103,7 @@ class GoogleGroupsApi
     atom = '<atom:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:apps="http://schemas.google.com/apps/2006" xmlns:gd="http://schemas.google.com/g/2005">'
     atom += "<apps:property name=\"email\" value=\"#{email}\"/>"
     atom += '</atom:entry>'
-    
     c = post("apps-apis.google.com", "/a/feeds/group/2.0/cojourners.com/#{group_id}/owner", atom)
-
   end
   
   def self.delete_member(member_id, group_id)
@@ -133,26 +129,26 @@ class GoogleGroupsApi
           </atom:entry>"
     begin
       response = post("www.google.com", "/m8/feeds/contacts/cojourners.com/full", atom, true, true)
-      feed = SimpleRSS.parse(response)
+      feed = Hpricot(response)
     rescue DuplicateContact => body
-      feed = SimpleRSS.parse(body.message)
+      feed = Hpricot(body.message)
     end
-    group.update_attribute(:contact_id, feed.id)
+    group.update_attribute(:contact_id, (feed/'id').inner_html)
   end
   
   def self.delete_shared_contact(contact_id)
     uri = URI.parse(contact_id)
     # Get edit url from existing contact
     response = get(uri.host, uri.path, nil, true, true)
-    feed = SimpleRSS.parse(response)
-    edit_link = feed.links.detect {|l| l.rel == 'edit'}.href
+    feed = Hpricot(response)
+    edit_link = (feed/'link[@rel="edit"]').attr('href')
     
     # delete contact
     uri = URI.parse(edit_link)
     delete(uri.host, uri.path, nil, true, true)
   end
   
-  protected 
+  # protected 
     def self.contact_auth
       if !@@contact_auth || !@@contact_auth_updated_at || @@contact_auth_updated_at < 23.hours.ago
         auth_response = post('www.google.com','/accounts/ClientLogin', {'Email'=>'admin@cojourners.com', 'Passwd'=>'CCCroxyoursox', 'accountType' => 'HOSTED', 'service' => 'cp', 'source' => 'ccc-mailWhere'}, false)
@@ -194,7 +190,7 @@ class GoogleGroupsApi
             when 'EntityExists'
               raise EntityExists, error
             when 'EntityDoesNotExist'
-              # raise EntityDoesNotExist, error
+              Rails.logger.info(error.inspect)
             else
               raise standard_error(response)
             end

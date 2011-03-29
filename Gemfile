@@ -10,10 +10,11 @@ gem "rails", "3.0.5"
 # ActiveRecord requires a database adapter. By default,
 # Rails has selected sqlite3.
 gem "mysql2"
-gem 'nokogiri', "1.4.1"
-gem 'simple-rss', :git => "https://github.com/thoughtafter/simple-rss.git"
+# gem 'nokogiri', "1.4.1"
+# gem 'simple-rss', :git => "https://github.com/thoughtafter/simple-rss.git"
 gem 'will_paginate', '~> 3.0.pre2'
 gem 'memcache-client'
+gem 'hpricot'
 ## Bundle the gems you use:
 # gem "bj"
 # gem "hpricot", "0.6"
