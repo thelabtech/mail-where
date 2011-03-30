@@ -110,6 +110,7 @@ end
 
 desc "Automatically run cleanup"
 task :after_deploy, :roles => :app do
+  sudo "god restart mailwhere"
   deploy.cleanup
 end
 

@@ -186,13 +186,17 @@ class GoogleGroupsApi
           doc = Hpricot(response.body)
           error = (doc/'[@reason]')
           if error
-            case error.attr('reason')
-            when 'EntityExists'
-              raise EntityExists, error
-            when 'EntityDoesNotExist'
-              Rails.logger.info(response.body.inspect)
-            else
-              raise standard_error(response)
+            begin
+              case error.attr('reason')
+              when 'EntityExists'
+                raise EntityExists, error
+              when 'EntityDoesNotExist'
+                Rails.logger.info(response.body.inspect)
+              else
+                raise standard_error(response)
+              end
+            rescue => e
+              Rails.logger.info(e.inspect + ' == ' + response.body.inspect)
             end
           else
             raise standard_error(response)
