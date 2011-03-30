@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # -*- ruby -*-
 require 'rubygems'
-require 'daemon-spawn'
+require 'daemon_spawn'
 
 RAILS_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 

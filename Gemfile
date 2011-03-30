@@ -15,7 +15,6 @@ gem "mysql2"
 gem 'will_paginate', '~> 3.0.pre2'
 gem 'memcache-client'
 gem 'hpricot'
-gem 'daemon-spawn'
 ## Bundle the gems you use:
 # gem "bj"
 # gem "hpricot", "0.6"
