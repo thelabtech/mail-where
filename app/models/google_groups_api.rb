@@ -183,6 +183,7 @@ class GoogleGroupsApi
       else
         case response.code 
         when '400'
+          raise response.body.inspect
           doc = Nokogiri::XML.parse(response.body)
           error = doc.at('error')
           if error
