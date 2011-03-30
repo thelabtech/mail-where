@@ -183,15 +183,14 @@ class GoogleGroupsApi
       else
         case response.code 
         when '400'
-          raise response.body.inspect
-          doc = Nokogiri::XML.parse(response.body)
-          error = doc.at('error')
+          doc = Hpricot(response.body)
+          error = (doc/'[@reason]')
           if error
-            case error.attributes['reason'].value
+            case error.attr('reason')
             when 'EntityExists'
               raise EntityExists, error
             when 'EntityDoesNotExist'
-              Rails.logger.info(error.inspect)
+              Rails.logger.info(response.body.inspect)
             else
               raise standard_error(response)
             end
